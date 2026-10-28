@@ -1,0 +1,17 @@
+{
+  "name": "KTÜN İSG Çalışma Portalı",
+  "short_name": "İSG Portalı",
+  "description": "KTÜN İş Sağlığı ve Güvenliği çalışma portalı: konu anlatımı, testler, çıkmış sorular ve sınıf sohbeti.",
+  "lang": "tr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a252f",
+  "theme_color": "#1a252f",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
