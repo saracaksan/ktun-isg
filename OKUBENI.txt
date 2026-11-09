@@ -1,35 +1,36 @@
-KTÜN İSG PORTALI - TELEFON UYGULAMASI (PWA) KURULUMU
-=====================================================
+KTÜN İSG PORTALI - TELEFON UYGULAMASI (v2, sorun giderilmiş sürüm)
+=================================================================
 
-1) Apps Script'te (Code.gs) doGet fonksiyonunu şu hale getirin (sayfanın uygulama içinde açılabilmesi için):
+BU SÜRÜM NE DEĞİŞTİ?
+ Eski sürüm portalı bir çerçevenin içinde açmaya çalışıyordu; çerçeve engellenirse ekran boş kalıyordu.
+ Yeni sürüm:
+  - Portal çerçevede açılırsa: uygulama gibi tam ekran çalışır.
+  - Açılmazsa (9 saniye içinde cevap gelmezse): "Portalı doğrudan aç" düğmesi çıkar. Düğmeye bir kez
+    basınca uygulama bundan sonra portalı doğrudan açar (her seferinde beklemez).
+  - Adres yazılmamışsa veya internet yoksa ekranda açık bir uyarı gösterir (boş ekran kalmaz).
 
-   function doGet(e) {
-     return HtmlService.createHtmlOutputFromFile('Index')
-       .setTitle('KTÜN İSG Yüksek Lisans Portalı')
-       .addMetaTag('viewport', 'width=device-width, initial-scale=1, shrink-to-fit=no')
-       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-   }
+KURULUM (4 adım)
+ 1) Apps Script'e son Code.gs ve Index.html'i yapıştırın, sonra:
+      Dağıt > Dağıtımları yönet > (kalem simgesi) > Sürüm: "Yeni sürüm" > Dağıt
+    ÖNEMLİ: Yeni sürüm dağıtmazsanız değişiklikler yayına çıkmaz ve çerçeve çalışmaz.
+    Dağıtım ayarı: "Şu kullanıcı olarak çalıştır: Ben"  /  "Erişimi olan: Herkes".
+    (Erişim "Google hesabı olan herkes" ise çerçevede giriş sayfası açılamaz; uygulama doğrudan açma
+     düğmesini gösterir.)
+ 2) index.html içinde APP_URL satırına web uygulaması adresinizi yazın ("/exec" ile biter).
+ 3) Bu klasörün HEPSİNİ GitHub Pages'e yükleyin (index.html, manifest.json, sw.js VE icons klasörü).
+    Eksik dosya olursa "Uygulamayı yükle" seçeneği çıkmaz.
+    Örnek adres: https://saracaksan.github.io/ktun-isg-web/uygulama/
+ 4) Telefonda bu adresi açın:
+      ANDROID (Chrome): menü (⋮) > "Uygulamayı yükle" veya "Ana ekrana ekle"
+      iPHONE (Safari):  Paylaş > "Ana Ekrana Ekle"
+    Eski sürümü daha önce eklediyseniz önce eski simgeyi silin, sonra yenisini ekleyin.
 
-   Sonra: Dağıt > Dağıtımları yönet > (kalem) > Sürüm: "Yeni sürüm" > Dağıt.
-   Web uygulaması URL'sini kopyalayın ("/exec" ile biter).
+ÇALIŞMIYORSA SIRAYLA KONTROL EDİN
+ - Adresi tarayıcıda açınca "Kurulum eksik" yazıyorsa: APP_URL yazılmamış.
+ - "Portalı doğrudan aç" çıkıyorsa: Apps Script'te yeni sürüm dağıtılmamış ya da erişim "Herkes" değil.
+   Bu durumda da uygulama çalışır; yalnızca üstte tarayıcı çubuğu görünebilir.
+ - Güncelleme görünmüyorsa: tarayıcı verilerini (site verileri) temizleyin ya da simgeyi silip yeniden ekleyin.
 
-2) index.html dosyasında APP_URL satırına bu adresi yapıştırın.
-
-3) Bu klasörün TÜM içeriğini (index.html, manifest.json, sw.js, icons klasörü) GitHub Pages deponuza,
-   örneğin  ktun-isg-web/uygulama/  klasörüne yükleyin. Adres şöyle olur:
-   https://saracaksan.github.io/ktun-isg-web/uygulama/
-
-4) Telefonda bu adresi açın:
-   - ANDROID (Chrome): menü (⋮) > "Ana ekrana ekle" / "Uygulamayı yükle".
-   - iPHONE (Safari): Paylaş düğmesi > "Ana Ekrana Ekle".
-   Ana ekranda "İSG Portalı" simgesi çıkar; tam ekran, adres çubuğu olmadan açılır.
-
-5) (İsteğe bağlı) Android APK/AAB dosyası: https://www.pwabuilder.com adresine 3. adımdaki adresi
-   yapıştırın, "Package for stores" > Android seçin. APK'yı gruba doğrudan dağıtabilirsiniz
-   (Play Store şart değil).
-
-BİLİNEN SINIRLAR (telefonunuzda mutlaka deneyin):
- - Bazı tarayıcılarda (özellikle iPhone/Safari) iç içe sayfalarda "oturum hatırlama" kısıtlanabilir;
-   bu durumda her açılışta giriş istenebilir.
- - Mikrofon (sesli sohbet) bazı telefonlarda iç sayfada izin vermeyebilir.
- - Portal internetsiz çalışmaz (veriler Google'dadır). Çevrimdışıyken yalnızca açılış ekranı görünür.
+ANDROID APK (isteğe bağlı)
+ pwabuilder.com adresine GitHub Pages adresinizi yazın > Android paketi alın. APK'yı gruba doğrudan
+ dağıtabilirsiniz. Not: APK, çerçeve çalışmazsa da "doğrudan aç" yoluyla portala ulaşır.
