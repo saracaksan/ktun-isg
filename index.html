@@ -2,59 +2,2533 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
+  <base target="_top">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#1a252f">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="İSG Portalı">
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>KTÜN İSG Çalışma Portalı</title>
+  <meta name="color-scheme" content="light dark">
+  <script>(function(){try{var m=localStorage.getItem("isg_tema")||"auto";var d=m==="dark"||(m==="auto"&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-bs-theme",d?"dark":"light");}catch(e){}})();</script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    html, body { margin: 0; height: 100%; background: #1a252f; overflow: hidden; font-family: 'Segoe UI', Tahoma, sans-serif; }
-    #app { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; background: #fff; padding-top: env(safe-area-inset-top); box-sizing: border-box; }
-    #yukleniyor { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; color: #fff; text-align: center; padding: 24px; background: #1a252f; z-index: 5; transition: opacity .3s; }
-    #yukleniyor img { width: 96px; height: 96px; border-radius: 22px; }
-    .halka { width: 38px; height: 38px; border: 4px solid rgba(255,255,255,.25); border-top-color: #f1b400; border-radius: 50%; animation: don 1s linear infinite; }
-    @keyframes don { to { transform: rotate(360deg); } }
-    a.btn, button.btn { display: inline-block; background: #f1b400; color: #1a252f; font-weight: 700; border: 0; border-radius: 999px; padding: 12px 22px; text-decoration: none; font-size: 1rem; }
-    #sorun { display: none; font-size: .9rem; color: #cbd5e1; }
-    #cevrimdisi { display: none; }
+    body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .hidden { display: none !important; }
+    .card-custom { box-shadow: 0 8px 25px rgba(0,0,0,0.08); border-radius: 16px; border: none; background: #fff;}
+    
+    .status-dot { height: 12px; width: 12px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+    .online { background-color: #2ecc71; } .offline { background-color: #e74c3c; } .never { background-color: #95a5a6; }
+    
+    
+    .auth-card { background: #ffffff; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; border: 1px solid rgba(0,0,0,0.05); }
+    .custom-auth-tabs .nav-link { color: #495057; background: #f8f9fa; border-radius: 12px; margin: 0 5px; transition: all 0.3s ease; border: 1px solid #e9ecef; }
+    .custom-auth-tabs .nav-link:hover { background: #e2e6ea; }
+    .custom-auth-tabs .nav-link.active { background: #0d6efd; color: white; box-shadow: 0 6px 15px rgba(13, 110, 253, 0.3); border-color: #0d6efd; }
+    .auth-input { background: #f8f9fa; border: 1px solid #ced4da; border-radius: 12px; transition: 0.3s; }
+    .auth-input:focus { background: #fff; box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15); border-color: #0d6efd; }
+
+    .hero-section { background: linear-gradient(135deg, #0b1120 0%, #1e293b 50%, #0f172a 100%); color: white; border-radius: 20px; padding: 40px 30px; border: 1px solid rgba(255, 193, 7, 0.35); box-shadow: 0 15px 30px rgba(0,0,0,0.15);}
+    
+    
+    .sidebar { background: linear-gradient(180deg, #1a252f 0%, #111827 100%); color: white; min-height: 100vh; padding-top: 20px; box-shadow: 4px 0 15px rgba(0,0,0,0.1); }
+    .sidebar-course-link { cursor: pointer; display: flex; align-items: center; padding: 15px 20px; margin: 8px 15px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); text-decoration: none; color: #e2e8f0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .sidebar-course-link:hover { background: rgba(255, 193, 7, 0.1); border-color: rgba(255, 193, 7, 0.3); color: #f1c40f; transform: translateX(5px); }
+    .sidebar-course-link .course-icon { font-size: 1.5rem; margin-right: 15px; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; }
+    .sidebar-course-link:hover .course-icon { background: rgba(241, 196, 15, 0.2); }
+    
+    .cozum-kutusu { background-color: #f8f9fa; border-left: 4px solid #0dcaf0; padding: 15px; margin-top: 15px; border-radius: 0 8px 8px 0; font-size: 0.95rem;}
+    
+    
+    .sticky-timer { position: sticky; top: 0; z-index: 1000; background: #fff; padding: 15px; border-radius: 0 0 15px 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 25px; border-bottom: 4px solid #0d6efd; display: flex; justify-content: space-between; align-items: center;}
+    .pulse-timer { animation: textPulse 1s infinite; color: #dc3545 !important; }
+    @keyframes textPulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
+
+    
+    .audio-control-bar { background: #ffffff; border: 1px solid #dee2e6; border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .btn-audio { font-size: 0.85rem; font-weight: 600; border-radius: 20px; padding: 5px 14px; }
+    
+    
+    #ai-floater { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: 'Segoe UI', sans-serif;}
+    #ai-btn { background: #1e3c72; color: white; border-radius: 50px; padding: 12px 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(30,60,114,0.4); border: none; font-size: 1rem; transition: transform 0.2s;}
+    #ai-btn:hover { transform: scale(1.05); }
+    #ai-chat-box { width: 350px; height: 500px; background: white; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.25); display: flex; flex-direction: column; overflow: hidden; transition: all 0.3s ease; position: absolute; bottom: 60px; right: 0;}
+    #ai-header { background: #1e3c72; color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;}
+    #ai-messages { flex: 1; padding: 15px; overflow-y: auto; background: #f4f6f9; font-size: 0.95rem;}
+    .ai-msg { background: #e9ecef; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; max-width: 90%; align-self: flex-start; color:#333; border-bottom-left-radius: 2px;}
+    .user-msg { background: #0d6efd; color: white; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; max-width: 90%; align-self: flex-end; margin-left: auto; border-bottom-right-radius: 2px;}
+    #ai-input-area { display: flex; flex-direction: column; border-top: 1px solid #ddd; background:#fff;}
+    #voice-controls { display: flex; justify-content: center; padding: 10px; background: #f8f9fa; border-bottom: 1px solid #eee; }
+    #voice-btn { background: #198754; color: white; border: none; border-radius: 50px; padding: 8px 20px; font-weight: bold; font-size: 0.95rem; cursor: pointer; transition: 0.3s; width: 100%; box-shadow: 0 4px 10px rgba(25,135,84,0.3);}
+    #voice-btn.active { background: #dc3545; animation: pulse 1.5s infinite; box-shadow: 0 4px 10px rgba(220,53,69,0.4);}
+    #text-controls { display: flex; padding: 12px; align-items: center;}
+    #text-controls input { flex: 1; border: 1px solid #dee2e6; padding: 10px 15px; outline: none; border-radius: 20px; margin-right: 8px; background: #f8f9fa;}
+    #text-controls input:focus { background: #fff; border-color: #0d6efd;}
+    #text-controls button { background: none; border: none; font-weight: bold; cursor: pointer; padding: 0 5px; font-size:1.4rem; color: #1e3c72; transition: 0.2s;}
+    #text-controls button:hover { color: #0d6efd; transform: scale(1.1);}
+    
+    .rank-1 { background-color: #fff3cd !important; color: #000; font-weight: bold;}
+    .rank-2 { background-color: #f8f9fa !important; color: #000; font-weight: bold;}
+    .rank-3 { background-color: #ffe5d0 !important; color: #000; font-weight: bold;}
+    .rank-me { background-color: #d1e7dd !important; border: 2px solid #198754;}
+
+    
+    .live-dot { height: 11px; width: 11px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .live-dot.on { background: #22c55e; box-shadow: 0 0 0 0 rgba(34,197,94,.6); animation: livePulse 1.8s infinite; }
+    .live-dot.off { background: #cbd5e1; }
+    @keyframes livePulse { 0% { box-shadow: 0 0 0 0 rgba(34,197,94,.55);} 70% { box-shadow: 0 0 0 9px rgba(34,197,94,0);} 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0);} }
+    .class-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-bottom: 1px solid #eef0f3; }
+    .class-row:last-child { border-bottom: none; }
+    .class-row.me { background: #fff8e1; }
+    .class-rank { width: 44px; text-align: center; font-weight: 800; color: #64748b; flex-shrink: 0; }
+    .class-name { flex: 1 1 160px; min-width: 120px; font-weight: 700; color: #1e293b; }
+    .class-bars { flex: 2 1 240px; min-width: 200px; }
+    .mini-label { font-size: .72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: .4px; }
+    .class-dy { flex: 0 0 auto; text-align: center; font-weight: 700; white-space: nowrap; }
+    @media (max-width: 768px) { .class-row { flex-wrap: wrap; } .class-bars { flex-basis: 100%; } }
+
+    
+    #chat-fab { position: fixed; bottom: 20px; left: 20px; z-index: 9998; background: #198754; color: #fff; border: none; border-radius: 50px; padding: 12px 20px; font-weight: 700; box-shadow: 0 4px 15px rgba(25,135,84,.45); cursor: pointer; transition: transform .2s; }
+    #chat-fab:hover { transform: scale(1.05); }
+    #chat-fab .badge { margin-left: 6px; }
+    .chat-wrap { display: flex; flex-direction: column; height: calc(100vh - 150px); min-height: 420px; border: 1px solid #dee2e6; border-radius: 16px; overflow: hidden; background: #fff; }
+    .chat-head { background: #075e54; color: #fff; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .chat-body { display: flex; flex: 1; min-height: 0; }
+    .chat-side { width: 230px; background: #f8f9fa; border-right: 1px solid #e5e7eb; overflow-y: auto; padding: 12px; flex-shrink: 0; }
+    .chat-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    #chat-messages { flex: 1; overflow-y: auto; padding: 18px; background: #e5ddd5; display: flex; flex-direction: column; gap: 6px; }
+    .cmsg { max-width: 78%; padding: 8px 12px; border-radius: 10px; font-size: .97rem; word-wrap: break-word; overflow-wrap: anywhere; box-shadow: 0 1px 1px rgba(0,0,0,.12); }
+    .cmsg.other { background: #fff; align-self: flex-start; border-top-left-radius: 2px; }
+    .cmsg.mine { background: #dcf8c6; align-self: flex-end; border-top-right-radius: 2px; }
+    .cmsg .who { font-size: .75rem; font-weight: 800; color: #075e54; display: block; margin-bottom: 2px; }
+    .cmsg .time { font-size: .68rem; color: #8696a0; display: block; text-align: right; margin-top: 2px; }
+    .cday { align-self: center; background: #e1f2fb; color: #475569; font-size: .72rem; font-weight: 700; padding: 3px 12px; border-radius: 8px; margin: 6px 0; }
+    .chat-input { display: flex; gap: 8px; padding: 10px; background: #f0f2f5; border-top: 1px solid #e5e7eb; }
+    .chat-input input { flex: 1; border: none; border-radius: 22px; padding: 11px 18px; outline: none; }
+    .chat-input button { border: none; background: #25d366; color: #fff; border-radius: 50%; width: 46px; height: 46px; font-size: 1.2rem; flex-shrink: 0; }
+    @media (max-width: 768px) { .chat-side { display: none; } .chat-wrap { height: calc(100vh - 110px); } .cmsg { max-width: 90%; } }
+    .chat-wrap.fullscreen { position: fixed; inset: 0; z-index: 10050; height: 100vh; border-radius: 0; border: none; }
+
+    
+    #test-pill { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9997; background: #111827; color: #fff; border-radius: 50px; padding: 8px 10px 8px 18px; box-shadow: 0 6px 20px rgba(0,0,0,.35); display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: .92rem; white-space: nowrap; }
+    #test-pill .pill-save { font-size: .75rem; font-weight: 600; opacity: .85; }
+    #test-pill button { border: none; background: #ffc107; color: #111827; font-weight: 800; border-radius: 50px; padding: 6px 14px; }
+    @media (max-width: 768px) { #test-pill { bottom: 78px; } }
+    .pal-btn { width: 40px; height: 40px; padding: 0; font-weight: 800; border-radius: 10px; }
+    .resume-item { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; background: #fff; border: 1px solid #ffe08a; border-radius: 12px; margin-top: 10px; }
+    #refresh-btn { position: fixed; bottom: 80px; right: 20px; z-index: 9996; width: 44px; height: 44px; border-radius: 50%; border: 2px solid #1e3c72; background: #fff; color: #1e3c72; font-size: 1.2rem; box-shadow: 0 4px 12px rgba(0,0,0,.2); cursor: pointer; }
+    #refresh-btn:hover { background: #1e3c72; color: #fff; }
+
+    
+    #theme-btn { position: fixed; bottom: 130px; right: 20px; z-index: 9996; width: 44px; height: 44px; border-radius: 50%; border: 2px solid #1e3c72; background: #fff; color: #1e3c72; font-size: 1.2rem; box-shadow: 0 4px 12px rgba(0,0,0,.2); cursor: pointer; }
+    [data-bs-theme="dark"] body { background: #0e131a; color: #e5e7eb; }
+    [data-bs-theme="dark"] .bg-white, [data-bs-theme="dark"] .card-custom, [data-bs-theme="dark"] .auth-card,
+    [data-bs-theme="dark"] .list-group-item, [data-bs-theme="dark"] .audio-control-bar, [data-bs-theme="dark"] .sticky-timer,
+    [data-bs-theme="dark"] .resume-item, [data-bs-theme="dark"] #ai-chat-box, [data-bs-theme="dark"] #ai-input-area,
+    [data-bs-theme="dark"] .chat-wrap, [data-bs-theme="dark"] #theme-btn, [data-bs-theme="dark"] #refresh-btn,
+    [data-bs-theme="dark"] #mobile-bar { background-color: #18212c !important; color: #e5e7eb; }
+    [data-bs-theme="dark"] #theme-btn, [data-bs-theme="dark"] #refresh-btn { border-color: #5b7db5; color: #cfe0ff; }
+    [data-bs-theme="dark"] .bg-light, [data-bs-theme="dark"] #ai-messages, [data-bs-theme="dark"] #voice-controls,
+    [data-bs-theme="dark"] .chat-side, [data-bs-theme="dark"] .chat-input, [data-bs-theme="dark"] .auth-input,
+    [data-bs-theme="dark"] #text-controls input, [data-bs-theme="dark"] .btn-light { background-color: #222d3a !important; color: #e5e7eb !important; border-color: #324255 !important; }
+    [data-bs-theme="dark"] .text-dark:not(.badge):not(.btn) { color: #e5e7eb !important; }
+    [data-bs-theme="dark"] .badge.bg-light { background-color: #2b3949 !important; color: #e5e7eb !important; }
+    [data-bs-theme="dark"] .border, [data-bs-theme="dark"] .border-bottom, [data-bs-theme="dark"] .list-group-item, [data-bs-theme="dark"] .class-row { border-color: #324255 !important; }
+    [data-bs-theme="dark"] .class-row.me { background: #3a3320; }
+    [data-bs-theme="dark"] .class-name { color: #e5e7eb; }
+    [data-bs-theme="dark"] .cozum-kutusu { background-color: #1f2a37; color: #e5e7eb; }
+    [data-bs-theme="dark"] .resume-item { border-color: #6b5b1f; }
+    [data-bs-theme="dark"] #chat-messages { background: #0b141a; }
+    [data-bs-theme="dark"] .cmsg.other { background: #202c33; color: #e5e7eb; }
+    [data-bs-theme="dark"] .cmsg.mine { background: #005c4b; color: #fff; }
+    [data-bs-theme="dark"] .cmsg .who { color: #53bdeb; }
+    [data-bs-theme="dark"] .cday { background: #182229; color: #cbd5e1; }
+    [data-bs-theme="dark"] .ai-msg { background: #2b3949; color: #e5e7eb; }
+    [data-bs-theme="dark"] .table-light { --bs-table-bg: #222d3a; --bs-table-color: #e5e7eb; }
+    [data-bs-theme="dark"] .hover-bg-white:hover { background-color: #2a3a4d !important; }
+    [data-bs-theme="dark"] .alert-light { background-color: #222d3a; color: #cbd5e1; border-color: #324255; }
+    
+    [data-bs-theme="dark"] #notlar-icerik-alani { background-color: #fff !important; color: #1f2937 !important; }
+
+    
+    .cat-card { border: 1px solid rgba(0,0,0,.08); border-radius: 16px; padding: 16px; height: 100%; display: flex; flex-direction: column; gap: 6px; background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,.05); }
+    [data-bs-theme="dark"] .cat-card { background: #18212c; border-color: #324255; }
+    .cat-no { width: 38px; height: 38px; border-radius: 10px; background: #fff3cd; color: #7a5b00; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .res-card { border: 1px solid rgba(0,0,0,.08); border-radius: 14px; padding: 14px; height: 100%; background: #fff; }
+    [data-bs-theme="dark"] .res-card { background: #18212c; border-color: #324255; }
+    .res-icon { font-size: 1.6rem; line-height: 1; flex-shrink: 0; }
+
+    
+    #mobile-bar { display: none; }
+    #sidebar-backdrop { display: none; }
+    .main-col { max-height: 100vh; overflow-y: auto; }
+    @media (max-width: 767.98px) {
+      body { -webkit-text-size-adjust: 100%; }
+      input, select, textarea { font-size: 16px !important; } 
+      #mobile-bar.show-mobile { display: flex; align-items: center; justify-content: space-between; gap: 8px; position: sticky; top: 0; z-index: 1030; background: #1a252f; color: #fff; padding: 10px 12px; padding-top: calc(10px + env(safe-area-inset-top)); box-shadow: 0 2px 10px rgba(0,0,0,.25); }
+      #mobile-bar button { background: rgba(255,255,255,.12); border: none; color: #fff; border-radius: 10px; font-size: 1.25rem; padding: 6px 14px; }
+      #mobile-bar .mb-title { font-weight: 800; font-size: 1rem; flex: 1; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 86%; max-width: 330px; z-index: 1050; transform: translateX(-105%); transition: transform .25s ease; overflow-y: auto; min-height: 100vh; padding-bottom: 30px; }
+      .sidebar.open { transform: none; }
+      #sidebar-backdrop.open { display: block; position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 1040; }
+      .main-col { max-height: none; overflow: visible; }
+      #content-area { padding: 14px !important; margin: 8px !important; border-radius: 14px; }
+      .card-body { padding: 14px !important; }
+      h5.fs-4 { font-size: 1.02rem !important; }
+      .fs-5 { font-size: 1rem !important; }
+      .display-4 { font-size: 2.2rem; } .display-5 { font-size: 1.5rem; }
+      .hero-section { padding: 22px 14px; border-radius: 16px; }
+      .hero-section h3 { font-size: 1rem; }
+      .auth-card { padding: 20px !important; border-radius: 18px; }
+      .form-check { padding-left: 2.4rem !important; }
+      .form-check-input { margin-top: .3rem; }
+      .btn-lg { padding: .75rem 1rem; font-size: 1.05rem; }
+      #test-pill { bottom: 74px; font-size: .82rem; padding: 6px 8px 6px 14px; max-width: 94vw; }
+      #chat-fab, #ai-btn { padding: 12px 14px; font-size: 1.15rem; }
+      #chat-fab .fab-text, #ai-btn .fab-text { display: none; }
+      #chat-fab { left: 12px; bottom: calc(14px + env(safe-area-inset-bottom)); }
+      #ai-floater { right: 12px; bottom: calc(14px + env(safe-area-inset-bottom)); }
+      #refresh-btn { right: 12px; bottom: calc(76px + env(safe-area-inset-bottom)); }
+      #theme-btn { right: 12px; bottom: calc(126px + env(safe-area-inset-bottom)); }
+      #ai-chat-box { width: calc(100vw - 24px); height: 68vh; right: -4px; }
+      .chat-wrap { height: calc(100dvh - 150px); min-height: 360px; }
+      .nav-pills .nav-link { font-size: .85rem; padding: .5rem .4rem; }
+      .sticky-timer { padding: 10px 12px; } #test-timer-display { font-size: 1.4rem !important; }
+      .pal-btn { width: 36px; height: 36px; }
+      .modal-body { padding: 14px !important; }
+    }
+
+    
+    .q-card, #q-map-card, .q-title-card, #bitir-alani { max-width: 900px; margin-left: auto; margin-right: auto; }
+    .q-body { padding: 1.25rem 1.5rem !important; }
+    .q-head { display: flex; justify-content: space-between; align-items: center; gap: .5rem; margin-bottom: .85rem; padding-bottom: .65rem; border-bottom: 1px solid rgba(0,0,0,.08); }
+    [data-bs-theme="dark"] .q-head { border-color: #324255; }
+    .q-num { background: #0d6efd; color: #fff; font-weight: 700; font-size: .85rem; border-radius: 999px; padding: .3rem .9rem; white-space: nowrap; }
+    .q-num small { opacity: .8; font-weight: 600; }
+    .q-tools { display: flex; gap: .4rem; flex-shrink: 0; }
+    .q-tools .btn { padding: .25rem .7rem; font-size: .82rem; white-space: nowrap; }
+    .q-text { font-size: 1.05rem; line-height: 1.7; font-weight: 600; margin-bottom: 1rem; overflow-wrap: anywhere; white-space: pre-line; text-align: left; }
+    .q-options { display: flex; flex-direction: column; gap: .55rem; }
+    .q-options .form-check { position: relative; display: flex; align-items: flex-start; gap: .7rem; padding: .7rem .9rem !important; margin: 0; min-height: 0; cursor: pointer; }
+    .q-options .form-check-input { float: none; margin: .3rem 0 0 0 !important; flex-shrink: 0; width: 1.15rem; height: 1.15rem; }
+    .q-options .form-check-label { flex: 1; display: flex; gap: .5rem; font-size: .98rem; line-height: 1.6; font-weight: 500; overflow-wrap: anywhere; cursor: pointer; margin: 0; }
+    .q-options .form-check-label::after { content: ""; position: absolute; inset: 0; } 
+    .q-letter { font-weight: 800; min-width: 1.5rem; flex-shrink: 0; }
+    .q-clear { text-align: right; margin-top: .25rem; }
+    .q-clear .btn { font-size: .8rem; padding: .1rem .4rem; }
+    .cozum-kutusu { padding: .9rem 1.1rem; }
+    .cozum-kutusu .cz-title { font-weight: 800; color: #198754; margin-bottom: .45rem; font-size: 1rem; }
+    .cozum-kutusu .cz-text { font-size: .96rem; line-height: 1.75; white-space: pre-line; overflow-wrap: anywhere; }
+    .q-rep-title { font-size: 1.02rem; line-height: 1.65; font-weight: 700; overflow-wrap: anywhere; white-space: pre-line; }
+    .q-rep-opt { display: flex; gap: .5rem; padding: .65rem .85rem; border: 1px solid rgba(0,0,0,.1); border-radius: 10px; margin-bottom: .45rem; font-size: .96rem; line-height: 1.6; overflow-wrap: anywhere; }
+    @media (max-width: 767.98px) {
+      .q-body { padding: .9rem !important; }
+      .q-text { font-size: 1rem; line-height: 1.65; }
+      .q-tool-text { display: none; }
+      .q-tools .btn { padding: .3rem .65rem; font-size: 1rem; }
+      .q-options .form-check-label { font-size: .95rem; }
+      .cozum-kutusu { padding: .8rem .9rem; }
+    }
+
+    
+    .card.q-card.q-res-ok    { border: 4px solid #198754 !important; }
+    .card.q-card.q-res-bad   { border: 4px solid #dc3545 !important; }
+    .card.q-card.q-res-empty { border: 4px solid #0d6efd !important; }
+    .card.q-card.q-flagged   { border: 4px solid #ffc107 !important; box-shadow: 0 0 0 3px rgba(255,193,7,.35) !important; } 
+    .q-result { font-size: .78rem; font-weight: 700; border-radius: 999px; padding: .3rem .7rem; color: #fff; margin-left: auto; margin-right: .5rem; white-space: nowrap; }
+    .q-result.ok { background: #198754; } .q-result.bad { background: #dc3545; } .q-result.empty { background: #0d6efd; }
+    .q-result.flag { background: #ffc107; color: #1f2937; margin-left: 0; }
   </style>
 </head>
-<body>
-  <div id="yukleniyor">
-    <img src="icons/icon-192.png" alt="İSG">
-    <div style="font-weight:800; font-size:1.2rem;">KTÜN İSG Çalışma Portalı</div>
-    <div class="halka" id="halka"></div>
-    <div id="sorun">Açılması uzun sürdü. <a class="btn" id="tarayici" href="#" target="_blank" rel="noopener">Tarayıcıda aç</a></div>
-    <div id="cevrimdisi">İnternet bağlantısı yok. Bağlandığınızda portal açılır.<br><br><button class="btn" onclick="location.reload()">Tekrar dene</button></div>
+<body onload="initApp()">
+
+  
+  <div id="mobile-bar"><button onclick="toggleSidebar()" aria-label="Men&#xFC;">&#x2630;</button><span class="mb-title">&#x130;SG Portal&#x131;</span><button onclick="showWelcome()" aria-label="Ana sayfa">&#x1F3E0;</button></div>
+  <div id="sidebar-backdrop" onclick="closeSidebar()"></div>
+  
+  
+  <div id="ai-floater" class="hidden">
+    <button id="ai-btn" onclick="toggleAIChat()">&#x1F468;&#x200D;&#x1F3EB; <span class="fab-text">S&#x131;ra&#xE7; Hoca</span></button>
+    <div id="ai-chat-box" class="hidden">
+      <div id="ai-header">
+        <span>&#x1F468;&#x200D;&#x1F3EB; S&#x131;ra&#xE7; Hoca</span>
+        <div>
+           <button style="background:none;border:none;color:white;cursor:pointer;font-size:1.1rem;margin-right:12px;" onclick="stopVoice()" title="Sesi Sustur">&#x1F507;</button>
+           <button style="background:none;border:none;color:white;cursor:pointer;font-size:1.2rem;" onclick="toggleAIChat()" title="Kapat">&#x2716;</button>
+        </div>
+      </div>
+      <div id="ai-messages">
+        <div class="ai-msg">Merhaba! Ben S&#x131;ra&#xE7; Hoca. &#x130;stedi&#x11F;in zaman "Sesli Sohbeti Ba&#x15F;lat" butonuna t&#x131;klayarak benimle konu&#x15F;abilir veya mesaj yazabilirsin. Seni dinliyorum.</div>
+      </div>
+      <div id="ai-input-area">
+        <div id="voice-controls">
+           <button id="voice-btn" onclick="toggleContinuousVoiceChat()">&#x1F399;&#xFE0F; Sesli Sohbeti Ba&#x15F;lat</button>
+        </div>
+        <div id="text-controls">
+           <input type="text" id="ai-text-input" placeholder="Veya mesaj yaz..." onkeypress="handleAIKey(event)">
+           <button id="send-btn" onclick="sendAIPrompt()" title="G&#xF6;nder">&#x27A4;</button>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <iframe id="app" title="KTÜN İSG Portalı" allow="microphone; fullscreen; clipboard-write; autoplay" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  
+  <button id="chat-fab" class="hidden" onclick="openChatPage()">&#x1F4AC; <span class="fab-text">S&#x131;n&#x131;f Sohbeti</span> <span id="chat-unread" class="badge bg-danger rounded-pill hidden">0</span></button>
 
+  
+  <button id="refresh-btn" class="hidden" onclick="refreshPage()" title="Yenile (oturumdan &#xE7;&#x131;karmaz, kald&#x131;&#x11F;&#x131;n&#x131;z yere d&#xF6;ner)">&#x1F504;</button>
+  <button id="theme-btn" onclick="cycleTheme()" title="Tema">&#x1F313;</button>
+
+  
+  <div id="test-pill" class="hidden">
+    <span id="pill-count">0/0</span>
+    <span class="pill-save" id="pill-save"></span>
+    <button onclick="gotoNextEmpty()" title="S&#x131;radaki bo&#x15F; soruya git">&#x23ED; Bo&#x15F; soru</button>
+  </div>
+
+  
+  <div id="boot-screen" class="hidden container text-center py-5 mt-5">
+    <div class="spinner-border text-primary" style="width:3rem;height:3rem;"></div>
+    <p class="mt-4 fw-bold text-muted fs-5">Oturumunuz a&#xE7;&#x131;l&#x131;yor, kald&#x131;&#x11F;&#x131;n&#x131;z yere d&#xF6;n&#xFC;l&#xFC;yor...</p>
+  </div>
+
+
+<div id="landing-screen" class="container mt-4 mb-5">
+  
+  <div class="row mb-5">
+    <div class="col-12">
+      <div class="hero-section text-center position-relative overflow-hidden">
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill mb-3 shadow-sm" style="background: rgba(255, 193, 7, 0.15); border: 1px solid #ffc107;">
+          <span class="badge bg-warning text-dark fw-bold px-2 py-1">KAPALI DEVRE &#xD6;ZEL GRUP</span>
+          <span class="text-warning fw-semibold small">&#x2B50; KT&#xDC;N &#x130;SG Lisans&#xFC;st&#xFC; &#xC7;al&#x131;&#x15F;ma Portal&#x131;</span>
+        </div>
+        <h1 class="mb-2 fw-extrabold text-warning display-5">Konya Teknik &#xDC;niversitesi (KT&#xDC;N)</h1>
+        <h3 class="mb-4 text-light fw-semibold">&#x130;&#x15F; Sa&#x11F;l&#x131;&#x11F;&#x131; ve G&#xFC;venli&#x11F;i AI Destekli Y&#xFC;ksek Lisans Portal&#x131;</h3>
+        
+        <div class="card bg-dark bg-opacity-75 border-secondary text-start mx-auto p-3 p-md-4 mb-2 shadow" style="max-width: 960px; border-radius: 16px;">
+          <div class="card-body p-0">
+            <div class="alert alert-warning border-warning bg-warning bg-opacity-10 text-warning d-flex align-items-center gap-3 mb-3 py-2 px-3 rounded-3" role="alert">
+              <i class="bi bi-shield-lock-fill fs-4 flex-shrink-0"></i>
+              <div class="small fw-semibold"><strong>&#xD6;ZEL ER&#x130;&#x15E;&#x130;M B&#x130;LG&#x130;LEND&#x130;RMES&#x130;:</strong> Bu portal sadece grubumuza &#xF6;zeldir. Telegram ar&#x15F;ivleri, yapay zek&#xE2; analizleri ve &#xE7;&#x131;km&#x131;&#x15F; s&#x131;nav sorular&#x131;yla donat&#x131;lm&#x131;&#x15F;t&#x131;r.</div>
+            </div>
+            <p class="text-light fs-6 mb-0 lh-base">&#xD6;nceki d&#xF6;nem <strong>Telegram gruplar&#x131;nda payla&#x15F;&#x131;lan t&#xFC;m ar&#x15F;iv sorular&#x131;</strong>, s&#x131;navlarda <strong>&#xE7;&#x131;kmas&#x131; muhtemel t&#xFC;m senaryolar</strong> ve en g&#xFC;ncel konu anlat&#x131;mlar&#x131; sisteme aktar&#x131;lm&#x131;&#x15F;t&#x131;r.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+      <div class="auth-card p-4 p-md-5">
+        
+        
+        <ul class="nav nav-pills nav-fill mb-4 custom-auth-tabs" id="authTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-bold fs-5 py-2" id="login-tab" data-bs-toggle="pill" data-bs-target="#login-pane" type="button" role="tab">&#x1F511; Giri&#x15F; Yap</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold fs-5 py-2" id="register-tab" data-bs-toggle="pill" data-bs-target="#register-pane" type="button" role="tab">&#x1F4DD; &#xDC;ye Ol</button>
+          </li>
+        </ul>
+
+        <div class="tab-content" id="authTabsContent">
+          
+          
+          <div class="tab-pane fade show active" id="login-pane" role="tabpanel">
+            <form id="loginForm" onsubmit="handleLogin(event)">
+              <div class="mb-4">
+                <label class="form-label text-dark fw-bold ms-1">E-posta Adresi</label>
+                <input type="text" inputmode="email" autocapitalize="none" autocomplete="username" id="login-email" class="form-control form-control-lg auth-input" placeholder="ornek@ktun.edu.tr" required>
+              </div>
+              <div class="mb-4">
+                <label class="form-label text-dark fw-bold ms-1">&#x15E;ifre</label>
+                <input type="password" id="login-password" autocomplete="current-password" class="form-control form-control-lg auth-input" placeholder="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;" required>
+              </div>
+              <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm rounded-pill py-3">Sisteme Giri&#x15F; Yap</button>
+              <div class="text-center text-muted small mt-2">Bu cihazda oturumunuz hat&#x131;rlan&#x131;r; "&#xC7;&#x131;k&#x131;&#x15F; Yap" diyene kadar a&#xE7;&#x131;k kal&#x131;r.</div>
+              <div id="login-message" class="text-danger mt-3 text-center fw-bold"></div>
+            </form>
+
+            
+            <div class="text-center mt-2">
+              <button type="button" class="btn btn-link fw-semibold text-decoration-none" onclick="toggleForgot()">&#x15E;ifremi unuttum</button>
+            </div>
+            <div id="forgot-box" class="hidden mt-2 p-3 rounded-4 border bg-light">
+              <div class="fw-bold mb-1">&#x1F511; &#x15E;ifre hat&#x131;rlatma</div>
+              <div class="small text-muted mb-2">Kay&#x131;t olurken yazd&#x131;&#x11F;&#x131;n&#x131;z e-posta adresini girin. &#x15E;ifreniz yaln&#x131;zca bu adrese g&#xF6;nderilir.</div>
+              <input type="text" inputmode="email" autocapitalize="none" autocomplete="email" id="forgot-email" class="form-control auth-input mb-2" placeholder="ornek@ktun.edu.tr" onkeypress="if(event.key==='Enter'){event.preventDefault();sendForgot();}">
+              <button type="button" class="btn btn-outline-primary fw-bold rounded-pill w-100" id="forgot-btn" onclick="sendForgot()">&#x15E;ifremi E-postama G&#xF6;nder</button>
+              <div id="forgot-message" class="mt-2 text-center fw-bold small"></div>
+            </div>
+          </div>
+
+          
+          <div class="tab-pane fade" id="register-pane" role="tabpanel">
+            <form id="registerForm" onsubmit="handleRegister(event)">
+              <div class="row g-3 mb-3">
+                <div class="col-12">
+                  <label class="form-label text-dark fw-bold ms-1">Ad Soyad</label>
+                  <input type="text" id="reg-name" class="form-control form-control-lg auth-input" placeholder="Ad&#x131;n&#x131;z Soyad&#x131;n&#x131;z" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-dark fw-bold ms-1">Cinsiyet</label>
+                  <select id="reg-gender" class="form-select form-control-lg auth-input" required>
+                    <option value="" disabled selected>Se&#xE7;iniz</option>
+                    <option value="Erkek">Erkek</option>
+                    <option value="Kad&#x131;n">Kad&#x131;n</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-dark fw-bold ms-1">Do&#x11F;um Tarihi</label>
+                  <input type="date" id="reg-dob" class="form-control form-control-lg auth-input" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-dark fw-bold ms-1">&#x15E;ehir (Kat&#x131;l&#x131;m Yeri)</label>
+                  <input type="text" id="reg-city" class="form-control form-control-lg auth-input" placeholder="&#xD6;rn: Konya" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-dark fw-bold ms-1">&#x15E;ifre Belirleyin</label>
+                  <input type="password" id="reg-password" autocomplete="new-password" class="form-control form-control-lg auth-input" placeholder="En az 6 karakter" required>
+                </div>
+                <div class="col-12">
+                  <label class="form-label text-dark fw-bold ms-1">E-posta Adresi</label>
+                  <input type="email" id="reg-email" class="form-control form-control-lg auth-input" placeholder="ornek@ktun.edu.tr" required>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-warning btn-lg w-100 fw-bold shadow-sm rounded-pill py-3 text-dark mt-2">Hesap Olu&#x15F;tur ve Kat&#x131;l</button>
+              <div id="reg-message" class="text-success mt-3 text-center fw-bold"></div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+  <div id="student-screen" class="hidden container-fluid">
+    <div class="row">
+      <div class="col-md-4 col-lg-3 sidebar p-0" id="dynamic-sidebar"></div>
+      <div class="col-md-8 col-lg-9 p-0 p-md-4 main-col">
+        <div id="content-area" class="card card-custom p-3 p-md-5 m-2 m-md-0 shadow-sm border-0"></div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div id="sirac-screen" class="hidden container-fluid sirac-panel p-3 p-md-4">
+    <div class="card card-custom p-3 p-md-4 bg-white shadow-lg border-0">
+      <div class="d-flex flex-wrap justify-content-between align-items-center border-bottom pb-3 mb-3 gap-2">
+        <h2 class="text-primary fw-bold m-0">&#x1F6E1;&#xFE0F; Sistem Y&#xF6;netimi (S&#xFC;per Y&#xF6;netici)</h2>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-primary fw-bold rounded-pill px-4" onclick="refreshAdmin()">&#x1F504; Yenile</button>
+          <button class="btn btn-outline-danger fw-bold rounded-pill px-4" onclick="logoutUser()">Kapat ve &#xC7;&#x131;k</button>
+        </div>
+      </div>
+
+      <div id="admin-stats" class="row g-3 mb-4"></div>
+
+      <ul class="nav nav-pills mb-3 gap-2" id="adminTabs">
+        <li class="nav-item"><button class="nav-link active fw-bold rounded-pill" data-bs-toggle="pill" data-bs-target="#admin-tab-users">&#x1F465; &#xDC;yeler</button></li>
+        <li class="nav-item"><button class="nav-link fw-bold rounded-pill" data-bs-toggle="pill" data-bs-target="#admin-tab-logs" onclick="loadAdminLogs()">&#x1F4DC; Sistem Loglar&#x131;</button></li>
+      </ul>
+
+      <div class="tab-content">
+        <div class="tab-pane fade show active" id="admin-tab-users">
+          <div class="row g-2 mb-3">
+            <div class="col-md-6"><input type="text" id="admin-search" class="form-control" placeholder="Ad, e-posta veya &#x15F;ehir ara..." oninput="renderAdminUsers()"></div>
+            <div class="col-md-3">
+              <select id="admin-filter" class="form-select" onchange="renderAdminUsers()">
+                <option value="">T&#xFC;m durumlar</option>
+                <option value="Bekliyor">&#x23F3; Onay bekleyenler</option>
+                <option value="Onayl&#x131;">&#x2705; Onayl&#x131;lar</option>
+                <option value="Ask&#x131;ya Al&#x131;nd&#x131;">&#x26D4; Ask&#x131;dakiler</option>
+                <option value="__online">&#x1F7E2; &#x15E;u an online</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 border" style="font-size:.9rem;">
+              <thead class="table-dark">
+                <tr>
+                  <th>ID</th><th>&#xD6;&#x11F;renci</th><th>Cinsiyet</th><th>D. Tarihi</th><th>&#x15E;ehir</th><th>E-posta</th><th>&#x15E;ifre</th>
+                  <th>&#x130;lerleme</th><th>Ba&#x15F;ar&#x131;</th><th>Son Giri&#x15F;</th><th>Durum</th><th class="text-end">&#x130;&#x15F;lemler</th>
+                </tr>
+              </thead>
+              <tbody id="sirac-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="admin-tab-logs">
+          <div class="row g-2 mb-3">
+            <div class="col-md-6"><input type="text" id="log-search" class="form-control" placeholder="Loglarda ara (kullan&#x131;c&#x131;, i&#x15F;lem)..." oninput="renderAdminLogs()"></div>
+            <div class="col-md-6 text-md-end text-muted small pt-2" id="log-count"></div>
+          </div>
+          <div class="table-responsive" style="max-height:60vh; overflow-y:auto;">
+            <table class="table table-sm table-hover align-middle border mb-0">
+              <thead class="table-dark" style="position:sticky; top:0;"><tr><th style="width:170px;">Tarih</th><th>Kullan&#x131;c&#x131;</th><th>&#x130;&#x15F;lem</th></tr></thead>
+              <tbody id="admin-log-body"><tr><td colspan="3" class="text-center text-muted p-4">Loglar i&#xE7;in sekmeyi a&#xE7;&#x131;n.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="modal fade" id="testRaporModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable modal-fullscreen-md-down">
+      <div class="modal-content shadow-lg border-0" style="border-radius: 20px; overflow: hidden;">
+        <div class="modal-header bg-primary text-white border-0 p-4">
+          <h5 class="modal-title fw-bold" id="raporModalBaslik">&#x1F4CA; Test Ba&#x15F;ar&#x131; Raporu ve Soru Analizi</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat" onclick="stopVoice()"></button>
+        </div>
+        <div class="modal-body p-4 p-md-5 bg-light" id="raporModalIcerik">
+          <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+            <p class="mt-3 text-muted fw-bold">Sonu&#xE7;lar haz&#x131;rlan&#x131;yor...</p>
+          </div>
+        </div>
+        <div class="modal-footer bg-white border-top-0 p-4">
+          <button type="button" class="btn btn-danger btn-sm me-auto rounded-pill px-4" onclick="stopVoice()">&#x1F507; Sesi Sustur</button>
+          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal" onclick="stopVoice()">Kapat</button>
+          <button type="button" class="btn btn-warning fw-bold rounded-pill px-4" id="modalTekrarCozBtn">&#x1F504; Testi Tekrar &#xC7;&#xF6;z</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <audio id="alarm-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // ====== BURAYA KENDİ ADRESİNİZİ YAZIN (Apps Script > Dağıt > Web uygulaması URL'si, "/exec" ile biter) ======
-    const APP_URL = 'https://script.google.com/macros/s/AKfycbykm3ttziFkJTZ6mYAb3Px-57uvdkC5RRBZpzrFXoyuyM1KFFn_mOQxY4AIhbUPHwcu/exec';
-    // ========================================================================================================
+    let currentStudentName = "";
+    let currentStudentEmail = "";
+    let currentPass = "";
+    let currentQuestions = [];
+    let studentStats = { basari: 0, tamamlama: 0, solvedMap: {} };
 
-    const fr = document.getElementById('app');
-    const ekran = document.getElementById('yukleniyor');
-    document.getElementById('tarayici').href = APP_URL;
+    // Form Submit Hatalar\u0131n\u0131 Engelleme (Bo\u015f Sayfaya Y\u00f6nelimi \u00c7\u00f6zer)
+    function handleLogin(e) { e.preventDefault(); attemptLogin(); }
+    function handleRegister(e) { e.preventDefault(); register(); }
 
-    function ac() {
-      if (!navigator.onLine) { document.getElementById('halka').style.display = 'none'; document.getElementById('cevrimdisi').style.display = 'block'; return; }
-      fr.src = APP_URL;
-    }
-    fr.addEventListener('load', function() {
-      if (fr.src && fr.src.indexOf('script.google.com') > -1) { ekran.style.opacity = '0'; setTimeout(() => ekran.style.display = 'none', 350); }
+    // HTML Notlar\u0131ndaki Sayfa \u0130\u00e7i Link T\u0131klamalar\u0131n\u0131 Yakala
+    document.addEventListener('click', function(e) {
+      let anchor = e.target.closest('a');
+      if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').startsWith('#') && anchor.getAttribute('href').length > 1) {
+        e.preventDefault();
+        let targetId = anchor.getAttribute('href');
+        let targetElement = document.querySelector(targetId);
+        if (targetElement) { targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      }
     });
-    setTimeout(() => { if (ekran.style.display !== 'none') document.getElementById('sorun').style.display = 'block'; }, 12000);
-    window.addEventListener('online', ac);
-    ac();
 
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+    // G\u00fcvenlik: kullan\u0131c\u0131 metinlerini HTML'e basmadan \u00f6nce temizler
+    function escapeHtml(s) {
+      return String(s === null || s === undefined ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    // YEN\u0130: onclick="...('metin')" i\u00e7ine g\u00fcvenle metin koymak i\u00e7in
+    function escJs(s) {
+      return String(s === null || s === undefined ? '' : s)
+        .replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\r?\n/g, ' ');
+    }
+    // YEN\u0130: Uzun / sat\u0131r sonlu metinleri (yapay zek\u00e2 cevab\u0131, \u00e7\u00f6z\u00fcm) sesli okutmak i\u00e7in g\u00fcvenli kay\u0131t defteri
+    const speakStore = {};
+    let speakCounter = 0;
+    function regSpeak(text) { const id = 'sp' + (++speakCounter); speakStore[id] = String(text || ''); return id; }
+    function speakById(id) { speakText(speakStore[id] || ''); }
+
+    // ==========================================================
+    // YEN\u0130: KALICI OTURUM + BULUNULAN SAYFAYI HATIRLAMA
+    // ==========================================================
+    const LS_SESSION = 'isg_oturum_v2';
+    let currentView = { type: 'home' };
+    let pendingView = null;
+
+    function saveSession() {
+      if (!currentStudentEmail || !currentPass) return;
+      try { localStorage.setItem(LS_SESSION, JSON.stringify({ email: currentStudentEmail, pass: currentPass, view: currentView })); } catch (e) {}
+    }
+    function loadSession() {
+      try { const r = localStorage.getItem(LS_SESSION); return r ? JSON.parse(r) : null; } catch (e) { return null; }
+    }
+    function clearSession() { try { localStorage.removeItem(LS_SESSION); } catch (e) {} }
+    function setView(v) { currentView = v; saveSession(); }
+
+    function refreshPage() {
+      if (testState.active && testState.timed) {
+        if (!confirm('S\u00fcreli s\u0131nav devam ediyor. Sayfay\u0131 yenilerseniz s\u0131nav s\u0131f\u0131rlan\u0131r. Yine de yenilensin mi?')) return;
+      }
+      flushProgressNow();
+      saveSession();
+      softReload();
+    }
+
+    // YEN\u0130: Ger\u00e7ek sayfa yenilemesi Google'\u0131n i\u00e7 \u00e7er\u00e7evesinde (Apps Script) \u00e7al\u0131\u015fmad\u0131\u011f\u0131 i\u00e7in
+    // "yumu\u015fak yenileme" yap\u0131l\u0131r: ba\u011flant\u0131lar durdurulur, her \u015fey sunucudan yeniden \u00e7ekilir,
+    // oturum a\u00e7\u0131k kal\u0131r ve bulundu\u011funuz sayfaya (ders / test / sohbet) d\u00f6n\u00fcl\u00fcr.
+    let yenileniyor = false;
+    function softReload() {
+      if (yenileniyor || !currentStudentEmail || !currentPass) return;
+      yenileniyor = true;
+      stopVoice();
+      if (testTimerInterval) clearInterval(testTimerInterval);
+      leaveTest();
+      stopHeartbeat();
+      stopChatPolling();
+      if (bgChatInterval) { clearInterval(bgChatInterval); bgChatInterval = null; }
+      closeSidebar();
+      coursesCache = null;                       // ders listesi de yeniden \u00e7ekilsin
+      pendingView = currentView;
+      const btn = document.getElementById('refresh-btn');
+      if (btn) { btn.disabled = true; btn.style.opacity = '.6'; btn.innerText = '\u23f3'; }
+      document.getElementById('student-screen').classList.add('hidden');
+      document.getElementById('boot-screen').classList.remove('hidden');
+      doLogin(currentStudentEmail, currentPass, true, true);
+    }
+
+    function restoreView(v) {
+      if (v && v.type === 'course' && v.ders) return loadCourse(v.ders);
+      if (v && v.type === 'chat') return openChatPage();
+      if (v && v.type === 'test' && v.ders && v.unite) return fetchAndRenderTest(v.ders, v.unite, v.title || v.unite, 'unite');
+      showWelcome();
+    }
+
+    // S\u00fcreli s\u0131navda yanl\u0131\u015fl\u0131kla sekme kapatmaya kar\u015f\u0131 uyar\u0131
+    window.addEventListener('beforeunload', function(e) {
+      if (testState.active && testState.timed && !testState.finished) { e.preventDefault(); e.returnValue = ''; }
+    });
+    // Sekme arka plana al\u0131n\u0131nca / kapan\u0131rken bekleyen ilerleme sunucuya g\u00f6nderilir
+    document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'hidden') flushProgressNow(); });
+    window.addEventListener('pagehide', function() { flushProgressNow(); });
+
+    // --- ZAMANLAYICI DE\u011e\u0130\u015eKENLER\u0130 ---
+    let testTimerInterval = null;
+    let testTimeRemaining = 0; 
+
+    // --- SESLEND\u0130RME MERKEZ\u0130 MOTORU ---
+    let isVoiceChatActive = false;
+    let recognition;
+    let isSpeakingCurrently = false;
+
+    function stopVoice() {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      isSpeakingCurrently = false;
+    }
+
+    function speakText(text, onCompleteCallback) {
+      if (!('speechSynthesis' in window)) return;
+      stopVoice();
+      let cleanText = String(text || '').replace(/<[^>]*>?/gm, '').replace(/[*#_~`>]/g, '').replace(/\s+/g, ' ').trim();
+      if (!cleanText) return;
+      let msg = new SpeechSynthesisUtterance(cleanText);
+      msg.lang = 'tr-TR';
+      msg.rate = 1.0;
+      msg.onstart = function() { isSpeakingCurrently = true; };
+      msg.onend = function() { 
+        isSpeakingCurrently = false; 
+        if (typeof onCompleteCallback === 'function') onCompleteCallback();
+      };
+      window.speechSynthesis.speak(msg);
+    }
+
+    function speakSelectedText() {
+      let selectedText = window.getSelection().toString().trim();
+      if (!selectedText) { alert("L\u00fctfen \u00f6nce sayfada okutmak istedi\u011finiz metni fare ile se\u00e7in."); return; }
+      speakText(selectedText);
+    }
+
+    function speakSingleQuestion(soruIndex) {
+      let q = currentQuestions[soruIndex];
+      if (!q) return;
+      let textToRead = `Soru ${soruIndex + 1}: ${q.metin}. A \u015f\u0131kk\u0131: ${q.secenekler.A}. B \u015f\u0131kk\u0131: ${q.secenekler.B}. `;
+      if (q.secenekler.C) textToRead += `C \u015f\u0131kk\u0131: ${q.secenekler.C}. `;
+      if (q.secenekler.D) textToRead += `D \u015f\u0131kk\u0131: ${q.secenekler.D}. `;
+      if (q.secenekler.E) textToRead += `E \u015f\u0131kk\u0131: ${q.secenekler.E}. `;
+      
+      let cozumEl = document.getElementById(`cozum-${q.id}`);
+      if (cozumEl && !cozumEl.classList.contains('hidden') && q.cozum) {
+        textToRead += ` Do\u011fru cevap: ${q.cevap}. \u00c7\u00f6z\u00fcm: ${q.cozum}`;
+      }
+      speakText(textToRead);
+    }
+
+    // --- YAPAY ZEKA SOHBET MOTORU ---
+    function toggleAIChat() { document.getElementById('ai-chat-box').classList.toggle('hidden'); }
+    function handleAIKey(e) { if(e.key === 'Enter') sendAIPrompt(); }
+    
+    function toggleContinuousVoiceChat() {
+      if (!('webkitSpeechRecognition' in window)) { alert("Taray\u0131c\u0131n\u0131z desteklemiyor."); return; }
+      const voiceBtn = document.getElementById('voice-btn');
+      isVoiceChatActive = !isVoiceChatActive;
+      if (isVoiceChatActive) {
+        voiceBtn.innerHTML = "\ud83d\uded1 Dinliyorum... (Sohbeti Bitir)";
+        voiceBtn.classList.add('active');
+        startListening();
+      } else {
+        voiceBtn.innerHTML = "\ud83c\udf99\ufe0f Sesli Sohbeti Ba\u015flat";
+        voiceBtn.classList.remove('active');
+        if(recognition) recognition.stop();
+        stopVoice();
+      }
+    }
+
+    function startListening() {
+      if (!isVoiceChatActive) return;
+      recognition = new webkitSpeechRecognition();
+      recognition.lang = 'tr-TR';
+      recognition.interimResults = false;
+      recognition.start();
+      recognition.onresult = function(event) {
+        document.getElementById('ai-text-input').value = event.results[0][0].transcript;
+        sendAIPrompt(); 
+      };
+      recognition.onerror = function(event) {
+        if (isVoiceChatActive && event.error !== 'aborted') setTimeout(startListening, 1000);
+      };
+    }
+
+    function sendAIPrompt() {
+      const inputEl = document.getElementById('ai-text-input');
+      const msg = inputEl.value.trim();
+      if(!msg) return;
+      const msgBox = document.getElementById('ai-messages');
+      msgBox.innerHTML += `<div class="user-msg">${escapeHtml(msg)}</div>`;
+      inputEl.value = "";
+      msgBox.scrollTop = msgBox.scrollHeight;
+      const loadingId = "load-" + Date.now();
+      msgBox.innerHTML += `<div class="ai-msg" id="${loadingId}"><em>Hocan\u0131z d\u00fc\u015f\u00fcn\u00fcyor...</em></div>`;
+      msgBox.scrollTop = msgBox.scrollHeight;
+      if (isVoiceChatActive && recognition) recognition.abort();
+
+      google.script.run.withSuccessHandler(response => {
+        let formattedResp = escapeHtml(response).replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>");
+        document.getElementById(loadingId).innerHTML = formattedResp;
+        msgBox.scrollTop = msgBox.scrollHeight;
+        if (isVoiceChatActive) {
+          speakText(response, function() {
+            if (isVoiceChatActive) startListening();
+          });
+        }
+      }).askAI(msg);
+    }
+
+    // --- S\u0130STEM G\u0130R\u0130\u015e VE \u00c7IKI\u015e ---
+    function logoutUser() {
+      stopVoice();
+      if(testTimerInterval) clearInterval(testTimerInterval);
+      leaveTest();
+      clearSession();
+      stopHeartbeat();
+      stopChatPolling();
+      if (bgChatInterval) { clearInterval(bgChatInterval); bgChatInterval = null; }
+      currentStudentName = ""; currentStudentEmail = ""; currentPass = ""; siracPass = "";
+      currentView = { type: 'home' };
+      document.getElementById('student-screen').classList.add('hidden');
+      document.getElementById('sirac-screen').classList.add('hidden');
+      document.getElementById('ai-floater').classList.add('hidden');
+      document.getElementById('chat-fab').classList.add('hidden');
+      document.getElementById('refresh-btn').classList.add('hidden');
+      document.getElementById('mobile-bar').classList.remove('show-mobile');
+      closeSidebar();
+      document.getElementById('login-password').value = "";
+      document.getElementById('login-message').innerText = "";
+      document.getElementById('landing-screen').classList.remove('hidden');
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    function loadPublicStats() {}
+
+    // YEN\u0130: Sayfa a\u00e7\u0131ld\u0131\u011f\u0131nda kay\u0131tl\u0131 oturum varsa otomatik girer ve kald\u0131\u011f\u0131 yere d\u00f6ner
+    function initApp() {
+      applyTheme();
+      try { if (window.top && window.top !== window) window.top.postMessage({ isg: 'ready' }, '*'); } catch (e) {} // telefon uygulamas\u0131 kabu\u011funa haber
+      loadPublicStats();
+      const s = loadSession();
+      if (s && s.email && s.pass) {
+        document.getElementById('login-email').value = s.email;
+        document.getElementById('landing-screen').classList.add('hidden');
+        document.getElementById('boot-screen').classList.remove('hidden');
+        pendingView = s.view || null;
+        doLogin(s.email, s.pass, true);
+      }
+    }
+
+    function attemptLogin() {
+      const email = document.getElementById('login-email').value;
+      const pass = document.getElementById('login-password').value;
+      pendingView = null;
+      doLogin(email, pass, false);
+    }
+
+    function doLogin(email, pass, isAuto, soft) {
+      const msgEl = document.getElementById('login-message');
+      if (!isAuto) msgEl.innerText = "Sisteme giri\u015f yap\u0131l\u0131yor, l\u00fctfen bekleyin...";
+
+      function autoFail(text) {
+        clearSession();
+        document.getElementById('boot-screen').classList.add('hidden');
+        document.getElementById('landing-screen').classList.remove('hidden');
+        msgEl.innerText = text || "";
+      }
+
+      function yenilemeBitti() {
+        yenileniyor = false;
+        const b = document.getElementById('refresh-btn');
+        if (b) { b.disabled = false; b.style.opacity = ''; b.innerText = '\ud83d\udd04'; }
+      }
+
+      google.script.run.withFailureHandler(() => {
+        if (soft) {   // yenileme s\u0131ras\u0131nda internet koptuysa oturumu S\u0130LME, ekran\u0131 geri getir
+          document.getElementById('boot-screen').classList.add('hidden');
+          document.getElementById('student-screen').classList.remove('hidden');
+          yenilemeBitti();
+          alert('Ba\u011flant\u0131 kurulamad\u0131. \u0130nternetinizi kontrol edip yenileme d\u00fc\u011fmesine tekrar bas\u0131n.');
+          return;
+        }
+        if (isAuto) autoFail("Ba\u011flant\u0131 kurulamad\u0131. L\u00fctfen tekrar giri\u015f yap\u0131n.");
+        else msgEl.innerText = "Ba\u011flant\u0131 hatas\u0131, l\u00fctfen tekrar deneyin.";
+      }).withSuccessHandler(res => {
+        if(res.success) {
+          document.getElementById('landing-screen').classList.add('hidden');
+          document.getElementById('boot-screen').classList.add('hidden');
+          if(res.role === 'sirac') {
+            clearSession(); // y\u00f6netici \u015fifresi cihazda saklanmaz
+            siracPass = pass;
+            document.getElementById('sirac-screen').classList.remove('hidden');
+            loadSiracDashboard();
+          } else {
+            document.getElementById('student-screen').classList.remove('hidden');
+            document.getElementById('ai-floater').classList.remove('hidden');
+            document.getElementById('chat-fab').classList.remove('hidden');
+            document.getElementById('refresh-btn').classList.remove('hidden');
+            document.getElementById('mobile-bar').classList.add('show-mobile');
+            currentStudentName = res.name;
+            currentStudentEmail = res.email;
+            currentPass = pass;
+            saveSession();
+            startHeartbeat(); // online durumu canl\u0131 tutulur
+            buildSidebar();
+            
+            document.getElementById('content-area').innerHTML = '<div class="text-center p-5"><div class="spinner-border text-primary" style="width:3rem;height:3rem;"></div><p class="mt-4 fw-bold text-muted fs-5">E\u011fitim Verileriniz Y\u00fckleniyor...</p></div>';
+            google.script.run.withSuccessHandler(stats => {
+              studentStats = stats;
+              const v = pendingView;
+              pendingView = null;
+              yenilemeBitti();
+              restoreView(v);
+            }).getStudentDashboardData(res.email);
+          }
+        } else {
+          if (soft) yenilemeBitti();
+          if (isAuto) autoFail(res.message);
+          else msgEl.innerText = res.message;
+        }
+      }).login(email, pass, isAuto);
+    }
+
+    // ==========================================================
+    // YEN\u0130: \u015e\u0130FRE HATIRLATMA (giri\u015f ekran\u0131)
+    // ==========================================================
+    function toggleForgot() {
+      const box = document.getElementById('forgot-box');
+      box.classList.toggle('hidden');
+      if (!box.classList.contains('hidden')) {
+        const e = document.getElementById('forgot-email');
+        if (!e.value) e.value = document.getElementById('login-email').value || '';
+        document.getElementById('forgot-message').innerText = '';
+        setTimeout(() => e.focus(), 50);
+      }
+    }
+    let forgotBusy = false;
+    function sendForgot() {
+      if (forgotBusy) return;
+      const em = document.getElementById('forgot-email').value.trim();
+      const msg = document.getElementById('forgot-message');
+      const btn = document.getElementById('forgot-btn');
+      if (!em) { msg.className = 'mt-2 text-center fw-bold small text-danger'; msg.innerText = 'L\u00fctfen e-posta adresinizi yaz\u0131n.'; return; }
+      forgotBusy = true; btn.disabled = true;
+      msg.className = 'mt-2 text-center fw-bold small text-primary'; msg.innerText = 'G\u00f6nderiliyor...';
+      google.script.run.withSuccessHandler(res => {
+        forgotBusy = false; btn.disabled = false;
+        msg.className = 'mt-2 text-center fw-bold small ' + (res && res.success ? 'text-success' : 'text-danger');
+        msg.innerText = res && res.message ? res.message : '\u0130\u015flem tamamlanamad\u0131.';
+      }).withFailureHandler(() => {
+        forgotBusy = false; btn.disabled = false;
+        msg.className = 'mt-2 text-center fw-bold small text-danger';
+        msg.innerText = 'Ba\u011flant\u0131 hatas\u0131. L\u00fctfen tekrar deneyin.';
+      }).sifreHatirlat(em);
+    }
+
+    function register() {
+      const data = {
+        fullname: document.getElementById('reg-name').value, 
+        gender: document.getElementById('reg-gender').value,
+        dob: document.getElementById('reg-dob').value,
+        city: document.getElementById('reg-city').value,
+        email: document.getElementById('reg-email').value, 
+        password: document.getElementById('reg-password').value 
+      };
+      document.getElementById('reg-message').className = "text-primary mt-3 text-center fw-bold";
+      document.getElementById('reg-message').innerText = "Kay\u0131t i\u015flemi yap\u0131l\u0131yor...";
+      google.script.run.withSuccessHandler(res => {
+        document.getElementById('reg-message').className = res.success ? "text-success mt-3 text-center fw-bold" : "text-danger mt-3 text-center fw-bold";
+        document.getElementById('reg-message').innerText = res.message;
+      }).registerUser(data);
+    }
+
+    // --- PROFESYONEL SOL MEN\u00dc (d\u00f6nemlere g\u00f6re gruplu) ---
+    function buildSidebar() {
+      ensureCourses(courses => {
+        function link(c) {
+          return `
+            <a class="sidebar-course-link shadow-sm" onclick="loadCourse('${escJs(c.ad)}')">
+              <span class="course-icon">\ud83d\udcda</span>
+              <div>
+                <div class="fw-bold fs-6">${escapeHtml(c.ad)}</div>
+                <div class="small" style="color: #94a3b8; font-size: 0.75rem;">${c.etiket ? escapeHtml(c.etiket) + ' \u2022 ' : ''}Konular, S\u0131navlar ve Materyaller</div>
+              </div>
+            </a>`;
+        }
+        let html = `
+          <div class="p-4 text-center border-bottom mb-3" style="border-color: rgba(255,255,255,0.1) !important;">
+            <div class="bg-warning text-dark fw-bold rounded-circle d-inline-flex justify-content-center align-items-center mb-3 shadow" style="width: 60px; height: 60px; font-size: 1.8rem;">
+              \ud83c\udf93
+            </div>
+            <h5 class="text-white fw-bold m-0" style="cursor:pointer;" onclick="showWelcome()">\u0130SG Portal\u0131</h5>
+            <small class="text-info fw-bold">${escapeHtml(currentStudentName)}</small>
+          </div>
+
+          <small class="text-secondary px-4 fw-bold text-uppercase" style="font-size:0.75rem; letter-spacing: 1px;">Topluluk</small>
+          <div class="mt-2 mb-3">
+            <a class="sidebar-course-link shadow-sm" onclick="showWelcome()">
+              <span class="course-icon">\ud83d\udc65</span>
+              <div>
+                <div class="fw-bold fs-6">S\u0131n\u0131f Durumu</div>
+                <div class="small" style="color: #94a3b8; font-size: 0.75rem;">Kim online, kim ne kadar ilerledi</div>
+              </div>
+            </a>
+            <a class="sidebar-course-link shadow-sm" onclick="openChatPage()">
+              <span class="course-icon">\ud83d\udcac</span>
+              <div>
+                <div class="fw-bold fs-6">S\u0131n\u0131f Sohbeti</div>
+                <div class="small" style="color: #94a3b8; font-size: 0.75rem;">Arkada\u015flar\u0131nla yaz\u0131\u015f, soru sor</div>
+              </div>
+            </a>
+          </div>`;
+
+        groupCourses(courses).forEach(g => {
+          html += `
+            <small class="text-secondary px-4 fw-bold text-uppercase d-block mt-3" style="font-size:0.75rem; letter-spacing: 1px;">${escapeHtml(g.donem)}${g.alt ? ' \u00b7 ' + escapeHtml(g.alt) : ''}</small>
+            <div class="mt-2">${g.items.map(link).join('')}</div>`;
+        });
+
+        html += `
+          <div class="mt-auto border-top pt-3 pb-4" style="border-color: rgba(255,255,255,0.1) !important; margin-top:50px;">
+            <a class="sidebar-course-link" style="background: rgba(220, 53, 69, 0.1); border-color: rgba(220, 53, 69, 0.3);" onclick="logoutUser()">
+              <span class="course-icon" style="background: rgba(220,53,69,0.2);">\ud83d\udeaa</span>
+              <div>
+                <div class="fw-bold text-danger fs-6">Sistemden \u00c7\u0131k\u0131\u015f Yap</div>
+                <div class="small text-secondary" style="font-size: 0.75rem;">Oturumu g\u00fcvenle kapat\u0131n</div>
+              </div>
+            </a>
+          </div>`;
+        document.getElementById('dynamic-sidebar').innerHTML = html;
+      });
+    }
+
+    // --- S\u00dcPER Y\u00d6NET\u0130C\u0130 PANEL\u0130 ---
+    let siracPass = "";
+    let adminUsers = [];
+    let adminLogs = [];
+
+    function loadSiracDashboard() {
+      document.getElementById('sirac-table-body').innerHTML = '<tr><td colspan="12" class="text-center p-4"><div class="spinner-border text-primary"></div></td></tr>';
+      google.script.run.withSuccessHandler(users => {
+        adminUsers = users || [];
+        renderAdminStats();
+        renderAdminUsers();
+      }).withFailureHandler(err => {
+        document.getElementById('sirac-table-body').innerHTML = '<tr><td colspan="12" class="text-center text-danger p-4">Yetki hatas\u0131 veya ba\u011flant\u0131 sorunu. Yeniden giri\u015f yap\u0131n.</td></tr>';
+      }).getSiracData(siracPass);
+    }
+    function refreshAdmin() { loadSiracDashboard(); if (document.getElementById('admin-tab-logs').classList.contains('active')) loadAdminLogs(); }
+
+    function renderAdminStats() {
+      const t = adminUsers.length;
+      const bekleyen = adminUsers.filter(u => u.status === 'Bekliyor').length;
+      const onayli = adminUsers.filter(u => u.status === 'Onayl\u0131').length;
+      const askida = adminUsers.filter(u => u.status === 'Ask\u0131ya Al\u0131nd\u0131').length;
+      const online = adminUsers.filter(u => u.online).length;
+      const card = (lbl, val, cls) => `<div class="col-6 col-md"><div class="p-3 rounded-4 text-center border ${cls}"><div class="small fw-bold text-uppercase">${lbl}</div><div class="fs-2 fw-bold">${val}</div></div></div>`;
+      document.getElementById('admin-stats').innerHTML =
+        card('Toplam \u00dcye', t, 'bg-light') + card('Onay Bekleyen', bekleyen, 'bg-warning bg-opacity-25 border-warning') +
+        card('Onayl\u0131', onayli, 'bg-success bg-opacity-10 border-success') + card('Ask\u0131da', askida, 'bg-danger bg-opacity-10 border-danger') +
+        card('Online', online, 'bg-primary bg-opacity-10 border-primary');
+    }
+
+    function renderAdminUsers() {
+      const q = (document.getElementById('admin-search').value || '').toLowerCase().trim();
+      const f = document.getElementById('admin-filter').value;
+      let list = adminUsers.filter(u => {
+        if (f === '__online' && !u.online) return false;
+        if (f && f !== '__online' && u.status !== f) return false;
+        if (q && !((u.name||'') + ' ' + (u.email||'') + ' ' + (u.city||'')).toLowerCase().includes(q)) return false;
+        return true;
+      });
+      list.sort((a, b) => (b.status === 'Bekliyor') - (a.status === 'Bekliyor'));
+      let html = '';
+      list.forEach(u => {
+        const rozet = u.status === 'Onayl\u0131' ? 'bg-success' : u.status === 'Bekliyor' ? 'bg-warning text-dark' : 'bg-danger';
+        const dash = '<span class="text-muted">-</span>';
+        html += `
+          <tr class="${u.status === 'Bekliyor' ? 'table-warning' : ''}">
+            <td class="text-muted fw-bold">#${u.row}</td>
+            <td class="fw-bold"><span class="live-dot ${u.online ? 'on' : 'off'} me-2"></span>${escapeHtml(u.name)}</td>
+            <td>${escapeHtml(u.gender) || dash}</td>
+            <td>${escapeHtml(u.dob) || dash}</td>
+            <td>${escapeHtml(u.city) || dash}</td>
+            <td><a href="mailto:${escapeHtml(u.email)}" class="text-decoration-none">${escapeHtml(u.email)}</a></td>
+            <td class="font-monospace">
+              <span id="pw-${u.row}" class="text-secondary" data-pw="${escapeHtml(u.password)}">\u2022\u2022\u2022\u2022\u2022\u2022</span>
+              <button class="btn btn-sm btn-link p-0 ms-1" onclick="togglePw(${u.row})" title="G\u00f6ster/Gizle">\ud83d\udc41\ufe0f</button>
+            </td>
+            <td style="min-width:90px;"><div class="progress" style="height:8px;"><div class="progress-bar bg-primary" style="width:${u.tamamlama}%"></div></div><small>%${u.tamamlama}</small></td>
+            <td style="min-width:90px;"><div class="progress" style="height:8px;"><div class="progress-bar bg-success" style="width:${u.basari}%"></div></div><small>%${u.basari}</small></td>
+            <td class="small">${u.sonGiris ? escapeHtml(u.sonGiris) : dash}</td>
+            <td><span class="badge ${rozet} rounded-pill px-3 py-2">${escapeHtml(u.status)}</span></td>
+            <td class="text-end text-nowrap">
+              ${u.status !== 'Onayl\u0131' ? `<button class="btn btn-sm btn-success fw-bold rounded-pill px-3 me-1" onclick="executeGodMode(${u.row}, 'Onayl\u0131', '${escJs(u.email)}')">\u2705 Onayla</button>` : ''}
+              ${u.status === 'Onayl\u0131' ? `<button class="btn btn-sm btn-outline-warning fw-bold rounded-pill px-3 me-1" onclick="executeGodMode(${u.row}, 'Ask\u0131ya Al\u0131nd\u0131', '${escJs(u.email)}')">\u26d4 Ask\u0131ya Al</button>` : ''}
+              <button class="btn btn-sm btn-outline-danger fw-bold rounded-pill px-3" onclick="executeGodMode(${u.row}, 'Sil', '${escJs(u.email)}')">\ud83d\uddd1\ufe0f Sil</button>
+            </td>
+          </tr>`;
+      });
+      if (!html) html = '<tr><td colspan="12" class="text-center text-muted p-4">Kay\u0131t bulunamad\u0131.</td></tr>';
+      document.getElementById('sirac-table-body').innerHTML = html;
+    }
+
+    function togglePw(row) {
+      const el = document.getElementById('pw-' + row);
+      if (!el) return;
+      el.innerText = (el.innerText === '\u2022\u2022\u2022\u2022\u2022\u2022') ? el.getAttribute('data-pw') : '\u2022\u2022\u2022\u2022\u2022\u2022';
+    }
+
+    function executeGodMode(row, action, email) {
+      const msg = action === 'Sil' ? email + ' kullan\u0131c\u0131s\u0131 KALICI olarak silinecek. Emin misiniz?'
+                : action === 'Onayl\u0131' ? email + ' kullan\u0131c\u0131s\u0131 onaylans\u0131n m\u0131?'
+                : email + ' kullan\u0131c\u0131s\u0131 ask\u0131ya al\u0131ns\u0131n m\u0131?';
+      if (!confirm(msg)) return;
+      google.script.run.withSuccessHandler(res => {
+        if (res && !res.success) alert(res.message);
+        loadSiracDashboard();
+      }).withFailureHandler(() => alert('\u0130\u015flem yap\u0131lamad\u0131.')).manageUser(row, action, email, siracPass);
+    }
+
+    function loadAdminLogs() {
+      document.getElementById('admin-log-body').innerHTML = '<tr><td colspan="3" class="text-center p-4"><div class="spinner-border text-primary"></div></td></tr>';
+      google.script.run.withSuccessHandler(logs => {
+        adminLogs = logs || [];
+        renderAdminLogs();
+      }).withFailureHandler(() => {
+        document.getElementById('admin-log-body').innerHTML = '<tr><td colspan="3" class="text-danger text-center p-4">Loglar al\u0131namad\u0131.</td></tr>';
+      }).getSiracLogs(siracPass);
+    }
+
+    function renderAdminLogs() {
+      const q = (document.getElementById('log-search').value || '').toLowerCase().trim();
+      const list = adminLogs.filter(l => !q || ((l.kullanici||'') + ' ' + (l.islem||'')).toLowerCase().includes(q));
+      document.getElementById('log-count').innerText = list.length + ' kay\u0131t (en yeni \u00fcstte, son 500)';
+      document.getElementById('admin-log-body').innerHTML = list.length === 0
+        ? '<tr><td colspan="3" class="text-center text-muted p-4">Kay\u0131t yok.</td></tr>'
+        : list.map(l => `<tr><td class="text-muted small">${escapeHtml(l.tarih)}</td><td class="fw-semibold">${escapeHtml(l.kullanici)}</td><td>${escapeHtml(l.islem)}</td></tr>`).join('');
+    }
+
+    // ==========================================================
+    // ONLINE DURUMU (HEARTBEAT) + SINIF DURUMU L\u0130STES\u0130
+    // ==========================================================
+    let heartbeatInterval = null;
+    let classStatusInterval = null;
+    let classSortMode = 'basari';
+    let classStatusCache = [];
+
+    function startHeartbeat() {
+      stopHeartbeat();
+      google.script.run.heartbeat(currentStudentEmail);
+      heartbeatInterval = setInterval(() => {
+        if (currentStudentEmail) google.script.run.heartbeat(currentStudentEmail);
+      }, 60000);
+    }
+    function stopHeartbeat() {
+      if (heartbeatInterval) clearInterval(heartbeatInterval);
+      heartbeatInterval = null;
+      if (classStatusInterval) clearInterval(classStatusInterval);
+      classStatusInterval = null;
+    }
+
+    function loadClassStatus() {
+      const box = document.getElementById('class-status-box');
+      if (!box) return;
+      google.script.run.withSuccessHandler(list => {
+        classStatusCache = list || [];
+        renderClassStatus();
+      }).withFailureHandler(() => {
+        const b = document.getElementById('class-status-box');
+        if (b) b.innerHTML = '<div class="alert alert-warning">S\u0131n\u0131f durumu \u015fu an al\u0131namad\u0131.</div>';
+      }).getClassStatus(currentStudentEmail);
+    }
+
+    function setClassSort(mode) { classSortMode = mode; renderClassStatus(); }
+
+    function renderClassStatus() {
+      const box = document.getElementById('class-status-box');
+      if (!box) return;
+      let list = classStatusCache.slice();
+      if (classSortMode === 'ilerleme') list.sort((a, b) => b.tamamlama - a.tamamlama || b.basari - a.basari);
+      else if (classSortMode === 'online') list.sort((a, b) => (b.online - a.online) || b.basari - a.basari);
+      else list.sort((a, b) => b.basari - a.basari || b.tamamlama - a.tamamlama);
+
+      const onlineCount = list.filter(x => x.online).length;
+      let html = `
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <h4 class="fw-bold text-dark m-0">\ud83d\udc65 S\u0131n\u0131f Durumu
+            <span class="badge bg-success rounded-pill ms-2"><span class="live-dot on me-1" style="height:8px;width:8px;background:#fff;animation:none;"></span>${onlineCount} online</span>
+            <span class="badge bg-secondary rounded-pill">${list.length} \u00f6\u011frenci</span>
+          </h4>
+          <div class="btn-group btn-group-sm">
+            <button class="btn ${classSortMode==='basari'?'btn-primary':'btn-outline-primary'} fw-bold" onclick="setClassSort('basari')">\ud83c\udfc6 Ba\u015far\u0131</button>
+            <button class="btn ${classSortMode==='ilerleme'?'btn-primary':'btn-outline-primary'} fw-bold" onclick="setClassSort('ilerleme')">\ud83d\udcc8 \u0130lerleme</button>
+            <button class="btn ${classSortMode==='online'?'btn-primary':'btn-outline-primary'} fw-bold" onclick="setClassSort('online')">\ud83d\udfe2 Online</button>
+          </div>
+        </div>
+        <div class="bg-white rounded-4 shadow-sm border overflow-hidden">`;
+
+      if (list.length === 0) html += `<div class="p-4 text-center text-muted">Hen\u00fcz onayl\u0131 \u00f6\u011frenci bulunmuyor.</div>`;
+
+      list.forEach((u, idx) => {
+        const rank = idx + 1;
+        const rankBadge = rank === 1 ? '\ud83e\udd47' : rank === 2 ? '\ud83e\udd48' : rank === 3 ? '\ud83e\udd49' : rank + '.';
+        const toplamSoru = u.dogru + u.yanlis;
+        html += `
+          <div class="class-row ${u.isMe ? 'me' : ''}">
+            <div class="class-rank">${rankBadge}</div>
+            <div class="class-name">
+              <span class="live-dot ${u.online ? 'on' : 'off'} me-2" title="${u.online ? 'Online' : '\u00c7evrimd\u0131\u015f\u0131'}"></span>${escapeHtml(u.name)}
+              ${u.isMe ? '<span class="badge bg-primary rounded-pill ms-1">Siz</span>' : ''}
+              <div class="small text-muted fw-normal">${u.online ? '\ud83d\udfe2 \u015eu an online' : (u.sonGiris ? 'Son g\u00f6r\u00fclme: ' + escapeHtml(u.sonGiris) : 'Hen\u00fcz giri\u015f yapmad\u0131')}</div>
+            </div>
+            <div class="class-bars">
+              <div class="mini-label">\u0130lerleme %${u.tamamlama}</div>
+              <div class="progress mb-2" style="height:10px;"><div class="progress-bar bg-primary" style="width:${u.tamamlama}%"></div></div>
+              <div class="mini-label">Ba\u015far\u0131 %${u.basari}</div>
+              <div class="progress" style="height:10px;"><div class="progress-bar ${u.basari>=70?'bg-success':u.basari>=40?'bg-warning':'bg-danger'}" style="width:${u.basari}%"></div></div>
+            </div>
+            <div class="class-dy">
+              <div><span class="text-success">${u.dogru} D</span> / <span class="text-danger">${u.yanlis} Y</span></div>
+              <div class="small text-muted fw-normal">${toplamSoru} soru</div>
+            </div>
+          </div>`;
+      });
+      html += `</div><p class="small text-muted mt-2 mb-0">Liste her 30 saniyede bir kendili\u011finden yenilenir. Ba\u015far\u0131 ve D/Y de\u011ferleri her testin en son \u00e7\u00f6z\u00fcm\u00fcne g\u00f6re hesaplan\u0131r.</p>`;
+      box.innerHTML = html;
+    }
+
+    // ==========================================================
+    // SIRA\u00c7 HOCA ZAYIF KONU ANAL\u0130Z\u0130
+    // ==========================================================
+    function runWeakTopicAnalysis() {
+      const box = document.getElementById('weak-topic-box');
+      if (!box) return;
+      box.innerHTML = '<div class="text-center p-4"><div class="spinner-border text-primary"></div><p class="mt-3 fw-bold text-muted">S\u0131ra\u00e7 Hoca t\u00fcm \u00e7\u00f6z\u00fcmlerini inceliyor...</p></div>';
+      google.script.run.withSuccessHandler(rep => {
+        if (!rep || !rep.konular || rep.konular.length === 0) {
+          box.innerHTML = `<div class="alert alert-success rounded-4">${escapeHtml(rep && rep.analiz ? rep.analiz : 'Hen\u00fcz analiz edilecek yanl\u0131\u015f veya bo\u015f cevap bulunmuyor.')}</div>`;
+          return;
+        }
+        const sid = regSpeak(rep.analiz || "");
+        let rows = rep.konular.map(k => `
+          <tr><td class="fw-semibold">${escapeHtml(k.konu)}</td>
+          <td class="text-center text-danger fw-bold">${k.hata}</td>
+          <td class="text-center">${k.toplam}</td>
+          <td style="min-width:120px;"><div class="progress" style="height:10px;"><div class="progress-bar bg-danger" style="width:${k.oran}%"></div></div><small class="text-muted">%${k.oran} hata</small></td></tr>`).join('');
+        box.innerHTML = `
+          <div class="p-4 bg-primary bg-opacity-10 rounded-4 border border-primary border-opacity-25 text-start">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+              <h5 class="text-primary fw-bold m-0">\ud83e\udde0 S\u0131ra\u00e7 Hoca'n\u0131n \u00c7al\u0131\u015fma \u00d6nerisi</h5>
+              <button class="btn btn-sm btn-success rounded-pill px-4 fw-bold" onclick="speakById('${sid}')">\ud83d\udd0a Sesli Dinle</button>
+            </div>
+            <p class="text-dark fw-semibold" style="line-height:1.7;">${escapeHtml(rep.analiz).replace(/\n/g, '<br>')}</p>
+            <div class="table-responsive bg-white rounded-3 border">
+              <table class="table table-sm align-middle mb-0">
+                <thead class="table-light"><tr><th>Konu</th><th class="text-center">Hatal\u0131/Bo\u015f</th><th class="text-center">Toplam Soru</th><th>Hata Oran\u0131</th></tr></thead>
+                <tbody>${rows}</tbody>
+              </table>
+            </div>
+          </div>`;
+      }).withFailureHandler(() => {
+        box.innerHTML = '<div class="alert alert-warning">Analiz \u015fu an haz\u0131rlanamad\u0131, l\u00fctfen tekrar deneyin.</div>';
+      }).getWeakTopicsReport(currentStudentEmail);
+    }
+
+    // ==========================================================
+    // SINIF SOHBET\u0130 (WHATSAPP TARZI, GEN\u0130\u015e ALANDA A\u00c7ILIR)
+    // ==========================================================
+    let chatPollInterval = null;
+    let chatLastRow = 0;
+    let chatUnread = 0;
+    let chatPageOpen = false;
+    let chatLastDay = "";
+    let chatSending = false;
+
+    function stopChatPolling() {
+      if (chatPollInterval) clearInterval(chatPollInterval);
+      chatPollInterval = null;
+      chatPageOpen = false;
+    }
+
+    function openChatPage() {
+      closeSidebar();
+      stopVoice();
+      if (testTimerInterval) clearInterval(testTimerInterval);
+      leaveTest();
+      if (classStatusInterval) { clearInterval(classStatusInterval); classStatusInterval = null; }
+      setView({ type: 'chat' });
+      chatPageOpen = true;
+      chatUnread = 0;
+      updateChatBadge();
+      chatLastRow = 0;
+      chatLastDay = "";
+
+      document.getElementById('content-area').innerHTML = `
+        <div id="chat-wrap" class="chat-wrap">
+          <div class="chat-head">
+            <div class="fw-bold fs-5">\ud83d\udcac S\u0131n\u0131f Sohbeti <small id="chat-online-count" class="ms-2 opacity-75"></small></div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-light fw-bold rounded-pill px-3" id="chat-fs-btn" onclick="toggleChatFullscreen()">\u26f6 Tam Ekran</button>
+              <button class="btn btn-sm btn-outline-light fw-bold rounded-pill px-3" onclick="closeChatPage()">\u2716 Kapat</button>
+            </div>
+          </div>
+          <div class="chat-body">
+            <div class="chat-side">
+              <div class="mini-label mb-2">\u015eu an online</div>
+              <div id="chat-online-list"><small class="text-muted">Y\u00fckleniyor...</small></div>
+            </div>
+            <div class="chat-main">
+              <div id="chat-messages"><div class="text-center text-muted small mt-3">Mesajlar y\u00fckleniyor...</div></div>
+              <div class="chat-input">
+                <input type="text" id="chat-text" maxlength="500" placeholder="Bir mesaj yaz\u0131n..." autocomplete="off" onkeypress="if(event.key==='Enter') sendChatMessage()">
+                <button onclick="sendChatMessage()" title="G\u00f6nder">\u27a4</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+
+      pollChat();
+      if (chatPollInterval) clearInterval(chatPollInterval);
+      chatPollInterval = setInterval(pollChat, 5000);
+      setTimeout(() => { const i = document.getElementById('chat-text'); if (i) i.focus(); }, 300);
+    }
+
+    function closeChatPage() {
+      stopChatPolling();
+      startBackgroundChatPolling();
+      showWelcome();
+    }
+
+    function toggleChatFullscreen() {
+      const w = document.getElementById('chat-wrap');
+      const b = document.getElementById('chat-fs-btn');
+      if (!w) return;
+      w.classList.toggle('fullscreen');
+      b.innerText = w.classList.contains('fullscreen') ? '\ud83d\uddd7 K\u00fc\u00e7\u00fclt' : '\u26f6 Tam Ekran';
+      const m = document.getElementById('chat-messages');
+      if (m) m.scrollTop = m.scrollHeight;
+    }
+
+    function updateChatBadge() {
+      const b = document.getElementById('chat-unread');
+      if (!b) return;
+      if (chatUnread > 0) { b.innerText = chatUnread > 99 ? '99+' : chatUnread; b.classList.remove('hidden'); }
+      else b.classList.add('hidden');
+    }
+
+    // Sohbet a\u00e7\u0131k de\u011filken okunmam\u0131\u015f mesaj say\u0131s\u0131n\u0131 d\u00fc\u015f\u00fck s\u0131kl\u0131kta takip eder
+    let bgChatInterval = null;
+    function startBackgroundChatPolling() {
+      if (bgChatInterval) clearInterval(bgChatInterval);
+      bgChatInterval = setInterval(() => {
+        if (!currentStudentEmail) { clearInterval(bgChatInterval); return; }
+        if (chatPageOpen) return;
+        google.script.run.withSuccessHandler(res => {
+          if (!res) return;
+          if (chatLastRow === 0) { chatLastRow = res.lastRow; return; }
+          if (res.lastRow > chatLastRow) {
+            chatUnread += (res.lastRow - chatLastRow);
+            chatLastRow = res.lastRow;
+            updateChatBadge();
+          }
+        }).getChatLastRow();
+      }, 20000);
+    }
+
+    function pollChat() {
+      if (!chatPageOpen) return;
+      google.script.run.withSuccessHandler(res => {
+        if (!chatPageOpen || !res) return;
+        renderChatOnline(res.online || []);
+        if (res.messages && res.messages.length > 0) {
+          appendChatMessages(res.messages, chatLastRow === 0);
+        } else if (chatLastRow === 0) {
+          const m = document.getElementById('chat-messages');
+          if (m) m.innerHTML = '<div class="text-center text-muted small mt-3">Hen\u00fcz mesaj yok. \u0130lk mesaj\u0131 sen yaz! \ud83d\udc4b</div>';
+        }
+        chatLastRow = res.lastRow;
+      }).getChatMessages(currentStudentEmail, chatLastRow);
+    }
+
+    function renderChatOnline(names) {
+      const l = document.getElementById('chat-online-list');
+      const c = document.getElementById('chat-online-count');
+      if (c) c.innerText = '\u2022 ' + names.length + ' online';
+      if (!l) return;
+      l.innerHTML = names.length === 0 ? '<small class="text-muted">Kimse online de\u011fil.</small>' :
+        names.map(n => `<div class="d-flex align-items-center gap-2 py-1"><span class="live-dot on"></span><span class="fw-semibold small">${escapeHtml(n)}</span></div>`).join('');
+    }
+
+    function appendChatMessages(msgs, replaceAll) {
+      const box = document.getElementById('chat-messages');
+      if (!box) return;
+      if (replaceAll) { box.innerHTML = ''; chatLastDay = ""; }
+      const nearBottom = (box.scrollHeight - box.scrollTop - box.clientHeight) < 120;
+      msgs.forEach(m => {
+        if (m.gun !== chatLastDay) {
+          box.insertAdjacentHTML('beforeend', `<div class="cday">${escapeHtml(m.gun)}</div>`);
+          chatLastDay = m.gun;
+        }
+        const text = escapeHtml(m.mesaj).replace(/\n/g, '<br>');
+        box.insertAdjacentHTML('beforeend', `
+          <div class="cmsg ${m.isMe ? 'mine' : 'other'}">
+            ${m.isMe ? '' : `<span class="who">${escapeHtml(m.ad)}</span>`}
+            ${text}
+            <span class="time">${escapeHtml(m.saat)}</span>
+          </div>`);
+      });
+      if (replaceAll || nearBottom) box.scrollTop = box.scrollHeight;
+    }
+
+    function sendChatMessage() {
+      if (chatSending) return;
+      const input = document.getElementById('chat-text');
+      if (!input) return;
+      const text = input.value.trim();
+      if (!text) return;
+      chatSending = true;
+      input.value = "";
+      google.script.run.withSuccessHandler(res => {
+        chatSending = false;
+        if (res && res.success) pollChat();
+        else if (res) alert(res.message || 'Mesaj g\u00f6nderilemedi.');
+      }).withFailureHandler(() => {
+        chatSending = false;
+        alert('Mesaj g\u00f6nderilemedi, l\u00fctfen tekrar deneyin.');
+      }).sendChatMessage(currentStudentEmail, text);
+    }
+
+    // ==========================================================
+    // YEN\u0130: KOYU / A\u00c7IK TEMA (otomatik: cihaz ayar\u0131, elle: \u2600\ufe0f / \ud83c\udf19)
+    // ==========================================================
+    const THEME_KEY = 'isg_tema';
+    function themeMode() { try { return localStorage.getItem(THEME_KEY) || 'auto'; } catch (e) { return 'auto'; } }
+    function applyTheme() {
+      const m = themeMode();
+      const sysDark = !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      const dark = m === 'dark' || (m === 'auto' && sysDark);
+      document.documentElement.setAttribute('data-bs-theme', dark ? 'dark' : 'light');
+      const b = document.getElementById('theme-btn');
+      if (b) {
+        b.innerText = m === 'auto' ? '\ud83c\udf13' : (m === 'dark' ? '\ud83c\udf19' : '\u2600\ufe0f');
+        b.title = 'Tema: ' + (m === 'auto' ? 'Otomatik (cihaz ayar\u0131)' : m === 'dark' ? 'Koyu' : 'A\u00e7\u0131k') + ' \u2014 de\u011fi\u015ftirmek i\u00e7in dokunun';
+      }
+    }
+    function cycleTheme() {
+      const order = ['auto', 'light', 'dark'];
+      const next = order[(order.indexOf(themeMode()) + 1) % 3];
+      try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+      applyTheme();
+    }
+    (function() {
+      if (!window.matchMedia) return;
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      const cb = function() { if (themeMode() === 'auto') applyTheme(); };
+      if (mq.addEventListener) mq.addEventListener('change', cb); else if (mq.addListener) mq.addListener(cb);
+    })();
+
+    // ==========================================================
+    // YEN\u0130: TELEFON \u0130\u00c7\u0130N A\u00c7ILIR YAN MEN\u00dc
+    // ==========================================================
+    function toggleSidebar(force) {
+      const sb = document.getElementById('dynamic-sidebar');
+      const bd = document.getElementById('sidebar-backdrop');
+      if (!sb || !bd) return;
+      const open = (typeof force === 'boolean') ? force : !sb.classList.contains('open');
+      sb.classList.toggle('open', open);
+      bd.classList.toggle('open', open);
+    }
+    function closeSidebar() { toggleSidebar(false); }
+
+    // ==========================================================
+    // YEN\u0130: SORULARI G\u00dcVENL\u0130 HALE GET\u0130R (id / cevap alan\u0131 eksik gelse bile \u00e7al\u0131\u015f\u0131r)
+    // ==========================================================
+    function normalizeQuestions(list) {
+      return (list || []).map(function(q, i) {
+        const o = Object.assign({}, q);
+        if (o.id === undefined || o.id === null || o.id === '') o.id = i + 1;   // her soru = ayr\u0131 se\u00e7enek grubu
+        const c = (o.cevap !== undefined && o.cevap !== null && String(o.cevap).trim() !== '') ? o.cevap : o.dogruCevap;
+        o.cevap = String(c || '').trim().toUpperCase();
+        o.secenekler = o.secenekler || {};
+        return o;
+      });
+    }
+
+    // ==========================================================
+    // YEN\u0130: DERS KATALO\u011eU (D\u00d6NEMLER) + KAYNAKLAR (PDF / DRIVE)
+    // ==========================================================
+    let coursesCache = null, coursesLoading = false, coursesWaiters = [];
+    function ensureCourses(cb) {
+      if (coursesCache) { cb(coursesCache); return; }
+      coursesWaiters.push(cb);
+      if (coursesLoading) return;
+      coursesLoading = true;
+      function done(list, ok) {
+        coursesLoading = false;
+        coursesCache = ok ? list : null;
+        const w = coursesWaiters; coursesWaiters = [];
+        w.forEach(f => f(list));
+      }
+      google.script.run.withSuccessHandler(l => done(l || [], true)).withFailureHandler(() => done([], false)).getCoursesDetailed();
+    }
+    function findCourse(ad) { return (coursesCache || []).find(c => c.ad === ad) || null; }
+    function safeUrl(u) { u = String(u || '').trim(); return /^https?:\/\//i.test(u) ? u : ''; }
+    function groupCourses(list) {
+      const groups = [], map = {};
+      list.forEach(c => {
+        const k = c.donem || 'Dersler';
+        if (!map[k]) { map[k] = { donem: k, alt: c.donemAlt || '', items: [] }; groups.push(map[k]); }
+        map[k].items.push(c);
+      });
+      return groups;
+    }
+
+    function loadCatalog() {
+      ensureCourses(list => {
+        const box = document.getElementById('catalog-box');
+        if (!box) return;
+        if (!list.length) { box.innerHTML = ''; return; }
+        let n = 0;
+        box.innerHTML = `<h4 class="fw-bold mb-3">\ud83c\udf93 Ders Katalo\u011fu</h4>` + groupCourses(list).map(g => `
+          <div class="mb-4">
+            <div class="d-flex flex-wrap align-items-baseline gap-2 mb-2">
+              <h5 class="fw-bold m-0">${escapeHtml(g.donem)}</h5>
+              <span class="text-muted small">${g.alt ? escapeHtml(g.alt) + ' \u00b7 ' : ''}${g.items.length} ders</span>
+            </div>
+            <div class="row g-3">
+              ${g.items.map(c => {
+                n++;
+                const no = String(c.sira < 100000 ? c.sira : n).padStart(2, '0');
+                const link = safeUrl(c.link);
+                return `
+                <div class="col-12 col-md-6 col-xl-4">
+                  <div class="cat-card">
+                    <div class="d-flex align-items-start gap-3">
+                      <span class="cat-no">${escapeHtml(no)}</span>
+                      <div class="flex-grow-1">
+                        <div class="fw-bold lh-sm">${escapeHtml(c.ad)}</div>
+                        <div class="small text-muted mt-1">${escapeHtml(c.hoca || c.aciklama || '')}</div>
+                      </div>
+                      ${c.etiket ? `<span class="badge bg-danger">${escapeHtml(c.etiket)}</span>` : ''}
+                    </div>
+                    <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                      ${c.bolum ? `<span class="badge bg-light text-dark border">\ud83d\udcd1 ${escapeHtml(c.bolum)} B\u00f6l\u00fcm</span>` : ''}
+                      <span class="ms-auto d-flex gap-2">
+                        <button class="btn btn-sm btn-primary rounded-pill fw-bold px-3" onclick="loadCourse('${escJs(c.ad)}')">\ud83d\udcda Portalda A\u00e7</button>
+                        ${link ? `<a class="btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3" href="${escapeHtml(link)}" target="_blank" rel="noopener">\ud83c\udf10 Derse Git</a>` : ''}
+                      </span>
+                    </div>
+                  </div>
+                </div>`;
+              }).join('')}
+            </div>
+          </div>`).join('');
+      });
+    }
+
+    function renderCourseMeta(dersAdi) {
+      const el = document.getElementById('course-meta');
+      if (!el) return;
+      const c = findCourse(dersAdi);
+      if (!c) return;
+      const link = safeUrl(c.link);
+      el.innerHTML = `
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+          ${c.hoca ? `<span class="badge bg-light text-dark border px-3 py-2">\ud83d\udc68\u200d\ud83c\udfeb ${escapeHtml(c.hoca)}</span>` : ''}
+          ${c.bolum ? `<span class="badge bg-light text-dark border px-3 py-2">\ud83d\udcd1 ${escapeHtml(c.bolum)} B\u00f6l\u00fcm</span>` : ''}
+          ${c.donem && c.donem !== 'Dersler' ? `<span class="badge bg-light text-dark border px-3 py-2">\ud83d\uddd3 ${escapeHtml(c.donem)}</span>` : ''}
+          ${c.etiket ? `<span class="badge bg-danger px-3 py-2">${escapeHtml(c.etiket)}</span>` : ''}
+          ${link ? `<a class="btn btn-sm btn-dark rounded-pill fw-bold px-4 ms-md-auto" href="${escapeHtml(link)}" target="_blank" rel="noopener">\ud83c\udf10 Ders Sayfas\u0131na Git</a>` : ''}
+        </div>
+        ${c.aciklama && c.hoca ? `<p class="text-muted">${escapeHtml(c.aciklama)}</p>` : ''}`;
+    }
+
+    function turIcon(t) {
+      const n = String(t || '').toLowerCase();
+      if (n.includes('pdf')) return '\ud83d\udcc4';
+      if (n.includes('konu') || n.includes('anlat') || n.includes('not')) return '\ud83d\udcd6';
+      if (n.includes('final') || n.includes('deneme')) return '\ud83c\udfaf';
+      if (n.includes('\u00e7\u0131km\u0131\u015f') || n.includes('cikmis')) return '\ud83c\udfc6';
+      if (n.includes('soru')) return '\u2753';
+      if (n.includes('video')) return '\ud83c\udfac';
+      if (n.includes('ses')) return '\ud83c\udfa7';
+      if (n.includes('sunum')) return '\ud83d\udda5\ufe0f';
+      if (n.includes('tablo') || n.includes('excel')) return '\ud83d\udcca';
+      if (n.includes('\u00f6zet') || n.includes('ozet')) return '\ud83d\udcdd';
+      if (n.includes('duyuru')) return '\ud83d\udce2';
+      if (n.includes('g\u00f6rsel')) return '\ud83d\uddbc\ufe0f';
+      return '\ud83d\udcce';
+    }
+
+    function loadResources(dersAdi, force) {
+      const box = document.getElementById('resources-box');
+      if (!box) return;
+      box.innerHTML = '<div class="text-center p-3 text-muted fw-bold"><div class="spinner-border spinner-border-sm me-2"></div>Ders materyalleri y\u00fckleniyor...</div>';
+      google.script.run.withSuccessHandler(res => {
+        if (!(currentView.type === 'course' && currentView.ders === dersAdi)) return;
+        renderResources(dersAdi, res || { items: [] });
+      }).withFailureHandler(() => {
+        const b = document.getElementById('resources-box');
+        if (b) b.innerHTML = `<div class="alert alert-warning">Materyaller al\u0131namad\u0131. <button class="btn btn-sm btn-outline-secondary ms-2" onclick="loadResources('${escJs(dersAdi)}', true)">Tekrar dene</button></div>`;
+      }).getCourseResources(currentStudentEmail, dersAdi, !!force);
+    }
+
+    function filterResources(v) {
+      const q = String(v || '').toLowerCase().trim();
+      document.querySelectorAll('#resources-box .res-card-wrap').forEach(el => {
+        el.classList.toggle('hidden', q && !(el.getAttribute('data-q') || '').includes(q));
+      });
+      document.querySelectorAll('#resources-box .res-group').forEach(g => {
+        g.classList.toggle('hidden', g.querySelectorAll('.res-card-wrap:not(.hidden)').length === 0);
+      });
+    }
+
+    function renderResources(dersAdi, res) {
+      const box = document.getElementById('resources-box');
+      if (!box) return;
+      const items = res.items || [];
+      const order = ['Konu Anlat\u0131m\u0131', 'PDF', '\u00d6zet', 'Soru', 'Final', '\u00c7\u0131km\u0131\u015f', 'Video', 'Sunum'];
+      const rank = t => { const i = order.findIndex(o => String(t).toLowerCase().includes(o.toLowerCase())); return i === -1 ? 99 : i; };
+      const turs = [];
+      items.forEach(r => { if (turs.indexOf(r.tur) === -1) turs.push(r.tur); });
+      turs.sort((a, b) => rank(a) - rank(b));
+
+      let html = `
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <h5 class="fw-bold m-0">\ud83d\udcce Ders Materyalleri ve PDF'ler <span class="badge bg-secondary rounded-pill">${items.length}</span></h5>
+          <div class="d-flex gap-2 flex-grow-1 flex-md-grow-0 justify-content-end">
+            ${items.length > 6 ? `<input type="search" class="form-control form-control-sm" style="max-width:220px;" placeholder="Materyal ara..." oninput="filterResources(this.value)">` : ''}
+            <button class="btn btn-sm btn-outline-secondary rounded-pill fw-bold" onclick="loadResources('${escJs(dersAdi)}', true)" title="Listeyi yenile">\ud83d\udd04</button>
+          </div>
+        </div>`;
+      if (res.klasorHata) html += `<div class="alert alert-warning small">${escapeHtml(res.klasorHata)}</div>`;
+      if (items.length === 0) {
+        html += `<div class="alert alert-light border text-center text-muted rounded-4">Bu ders i\u00e7in hen\u00fcz materyal eklenmemi\u015f.</div>`;
+      } else {
+        turs.forEach(t => {
+          html += `<div class="res-group mb-3"><div class="fw-bold text-muted text-uppercase small mb-2">${turIcon(t)} ${escapeHtml(t)}</div><div class="row g-3">`;
+          items.filter(r => r.tur === t).forEach(r => {
+            const v = safeUrl(r.goruntule), d = safeUrl(r.indir);
+            const q = (r.baslik + ' ' + r.tur + ' ' + (r.aciklama || '')).toLowerCase();
+            html += `
+              <div class="col-12 col-md-6 res-card-wrap" data-q="${escapeHtml(q)}">
+                <div class="res-card d-flex flex-column gap-2">
+                  <div class="d-flex gap-3">
+                    <span class="res-icon">${turIcon(r.tur)}</span>
+                    <div class="flex-grow-1" style="min-width:0;">
+                      <div class="fw-bold lh-sm" style="overflow-wrap:anywhere;">${escapeHtml(r.baslik)}</div>
+                      ${r.aciklama ? `<div class="small text-muted mt-1">${escapeHtml(r.aciklama)}</div>` : ''}
+                    </div>
+                  </div>
+                  <div class="d-flex flex-wrap gap-2 mt-auto">
+                    ${v ? `<a class="btn btn-sm btn-outline-primary rounded-pill fw-bold px-3" href="${escapeHtml(v)}" target="_blank" rel="noopener">\ud83d\udc41 G\u00f6r\u00fcnt\u00fcle</a>` : ''}
+                    ${d ? `<a class="btn btn-sm btn-success rounded-pill fw-bold px-3" href="${escapeHtml(d)}" target="_blank" rel="noopener">\u2b07 \u0130ndir</a>` : ''}
+                  </div>
+                </div>
+              </div>`;
+          });
+          html += `</div></div>`;
+        });
+        html += `<div class="small text-muted">Son g\u00fcncelleme: ${escapeHtml(res.guncelleme || '')}</div>`;
+      }
+      box.innerHTML = html;
+    }
+
+    // ==========================================================
+    // YEN\u0130: TEST DURUMU (KALDI\u011eI YERDEN DEVAM + SORU HAR\u0130TASI + \u0130\u015eARETLEME)
+    // ==========================================================
+    let testState = { active: false, timed: false, finished: false, persist: false, ders: '', unite: '', title: '', kategori: '', answers: {}, flags: {}, pos: 0, dirty: false, idxById: {} };
+    let syncTimer = null;
+    let lastSubmit = null;
+
+    function scrollContentTop() {
+      const ca = document.getElementById('content-area');
+      if (ca && ca.parentElement) ca.parentElement.scrollTop = 0;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function lpKey(d, u) { return 'isg_prog|' + currentStudentEmail + '|' + d + '|' + u; }
+    function saveLocalProgress() {
+      try { localStorage.setItem(lpKey(testState.ders, testState.unite), JSON.stringify({ answers: testState.answers, flags: testState.flags, pos: testState.pos, t: Date.now() })); } catch (e) {}
+    }
+    function loadLocalProgress(d, u) { try { const r = localStorage.getItem(lpKey(d, u)); return r ? JSON.parse(r) : null; } catch (e) { return null; } }
+    function clearLocalProgress(d, u) { try { localStorage.removeItem(lpKey(d, u)); } catch (e) {} }
+
+    // Cihazdaki ve sunucudaki kay\u0131ttan daha yeni olan\u0131 se\u00e7er
+    function pickProgress(l, s) {
+      const ok = p => p && p.answers && typeof p.answers === 'object';
+      const L = ok(l) ? l : null, S = ok(s) ? s : null;
+      if (L && S) return (L.t >= S.t) ? L : S;
+      return L || S || null;
+    }
+
+    function setSaveStatus(st) {
+      const el = document.getElementById('pill-save');
+      if (!el) return;
+      if (testState.timed) { el.innerText = '\u23f1 S\u00fcreli: kay\u0131t tutulmaz'; return; }
+      el.innerText = st === 'saving' ? '\ud83d\udcbe Kaydediliyor\u2026' : st === 'saved' ? '\u2705 Kaydedildi' : st === 'local' ? '\ud83d\udcf4 Bu cihazda sakland\u0131' : '';
+    }
+
+    function syncNow() {
+      clearTimeout(syncTimer);
+      if (!testState.active || !testState.persist || !currentStudentEmail) return;
+      const s = testState;
+      s.dirty = false;
+      setSaveStatus('saving');
+      google.script.run.withSuccessHandler(r => {
+        if (testState.active) setSaveStatus(r && r.success ? 'saved' : 'local');
+      }).withFailureHandler(() => {
+        if (testState.active) { testState.dirty = true; setSaveStatus('local'); }
+      }).saveTestProgress(currentStudentEmail, s.ders, s.unite, JSON.stringify(s.answers), JSON.stringify(s.flags), s.pos, currentQuestions.length, s.title);
+    }
+    function flushProgressNow() {
+      if (testState.active && testState.persist && testState.dirty) syncNow();
+    }
+    function leaveTest() {
+      flushProgressNow();
+      testState.active = false;
+      clearTimeout(syncTimer);
+      const p = document.getElementById('test-pill');
+      if (p) p.classList.add('hidden');
+    }
+
+    function afterAnswerChange() {
+      if (testState.persist) {
+        testState.dirty = true;
+        saveLocalProgress();
+        setSaveStatus('saving');
+        clearTimeout(syncTimer);
+        syncTimer = setTimeout(syncNow, 1500);
+      }
+      refreshPalette();
+      updatePill();
+    }
+    function onAnswerChange(qid, val) {
+      if (!testState.active || testState.finished) return;
+      testState.answers[qid] = val;
+      testState.pos = testState.idxById[qid] || 0;
+      afterAnswerChange();
+    }
+    function clearAnswer(qid) {
+      if (!testState.active || testState.finished) return;
+      document.querySelectorAll(`input[name="s${qid}"]`).forEach(r => { r.checked = false; });
+      delete testState.answers[qid];
+      afterAnswerChange();
+    }
+    function toggleFlag(qid) {
+      if (!testState.active || testState.finished) return;
+      if (testState.flags[qid]) delete testState.flags[qid]; else testState.flags[qid] = true;
+      paintFlag(qid);
+      afterAnswerChange();
+    }
+    function paintFlag(qid) {
+      const on = !!testState.flags[qid];
+      const card = document.getElementById('card-' + qid);
+      const btn = document.getElementById('flag-' + qid);
+      if (card) card.classList.toggle('q-flagged', on);
+      if (btn) {
+        btn.classList.toggle('btn-warning', on);
+        btn.classList.toggle('btn-outline-warning', !on);
+        btn.innerHTML = on ? '\ud83d\udea9 <span class="q-tool-text">\u0130\u015faretli</span>' : '\ud83d\udea9 <span class="q-tool-text">\u0130\u015faretle</span>';
+      }
+    }
+    function refreshPalette() {
+      currentQuestions.forEach((q, i) => {
+        const b = document.getElementById('pal-' + q.id);
+        if (!b) return;
+        const flagged = !!testState.flags[q.id];
+        const answered = !!testState.answers[q.id];
+        b.className = 'btn pal-btn ' + (flagged ? 'btn-warning' : answered ? 'btn-success' : 'btn-outline-secondary');
+      });
+    }
+    function updatePill() {
+      const el = document.getElementById('pill-count');
+      const pill = document.getElementById('test-pill');
+      if (!el || !pill) return;
+      el.innerText = `${Object.keys(testState.answers).length}/${currentQuestions.length} i\u015faretli`;
+      pill.classList.remove('hidden');
+    }
+    function gotoQuestion(i) {
+      const q = currentQuestions[i];
+      if (!q) return;
+      const el = document.getElementById('card-' + q.id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    function firstEmptyIndex(startFrom) {
+      for (let k = 0; k < currentQuestions.length; k++) {
+        const i = (startFrom + k) % currentQuestions.length;
+        if (!testState.answers[currentQuestions[i].id]) return i;
+      }
+      return -1;
+    }
+    function gotoNextEmpty() {
+      if (!currentQuestions.length) return;
+      const i = firstEmptyIndex((testState.pos + 1) % currentQuestions.length);
+      if (i === -1) { alert('T\u00fcm sorular i\u015faretlenmi\u015f. \ud83c\udf89 Dilerseniz s\u0131nav\u0131 bitirebilirsiniz.'); return; }
+      gotoQuestion(i);
+    }
+    function confirmFinish(dersAdi, uniteNo) {
+      const total = currentQuestions.length;
+      const ans = Object.keys(testState.answers).length;
+      const bos = total - ans;
+      const fl = Object.keys(testState.flags).length;
+      let msg = '';
+      if (bos > 0) msg += bos + ' soruyu bo\u015f b\u0131rakt\u0131n\u0131z.\n';
+      if (fl > 0) msg += fl + ' soru "i\u015faretli" olarak duruyor.\n';
+      msg += 'S\u0131nav\u0131 bitirmek istiyor musunuz?';
+      if (!confirm(msg)) return;
+      finishTest(dersAdi, uniteNo);
+    }
+    function restartTest(dersAdi, uniteNo, titleStr, kategori) {
+      if (!confirm('Kay\u0131tl\u0131 ilerlemeniz silinecek ve test ba\u015ftan ba\u015flayacak. Emin misiniz?')) return;
+      fetchAndRenderTest(dersAdi, uniteNo, titleStr, kategori, true);
+    }
+
+    // --- \u00d6\u011eRENC\u0130 ARAY\u00dcZ\u00dc ---
+    function showWelcome() {
+      closeSidebar();
+      stopVoice();
+      if(testTimerInterval) clearInterval(testTimerInterval);
+      leaveTest();
+      if (chatPageOpen) { stopChatPolling(); startBackgroundChatPolling(); }
+      if (classStatusInterval) clearInterval(classStatusInterval);
+      setView({ type: 'home' });
+      document.getElementById('content-area').innerHTML = `
+        <div class="text-center py-4">
+          <h2 class="text-dark fw-bold mb-5">\u00d6\u011frenme Portal\u0131na Ho\u015f Geldiniz, <span class="text-primary">${escapeHtml(currentStudentName)}</span></h2>
+          <div class="row justify-content-center mb-5 g-4">
+            <div class="col-md-5">
+              <div class="p-4 bg-white shadow-sm rounded-4 border-start border-5 border-primary h-100 d-flex flex-column justify-content-center">
+                 <h6 class="text-muted fw-bold text-uppercase mb-3"><i class="bi bi-bar-chart-fill me-2"></i> E\u011fitim Tamamlama Oran\u0131</h6>
+                 <div class="progress w-100 mb-2 bg-light" style="height: 25px; border-radius:12px;">
+                   <div class="progress-bar bg-primary fw-bold" style="width: ${studentStats.tamamlama}%; font-size:1rem;">%${studentStats.tamamlama}</div>
+                 </div>
+              </div>
+            </div>
+            <div class="col-md-5">
+              <div class="p-4 bg-white shadow-sm rounded-4 border-start border-5 border-success h-100 d-flex flex-column justify-content-center">
+                 <h6 class="text-muted fw-bold text-uppercase mb-3"><i class="bi bi-trophy-fill me-2"></i> Genel Ba\u015far\u0131 Ortalamas\u0131</h6>
+                 <h1 class="text-success fw-bold display-4 mb-0">%${studentStats.basari}</h1>
+              </div>
+            </div>
+          </div>
+          <div class="alert alert-primary bg-primary bg-opacity-10 border-0 d-inline-block px-5 py-3 rounded-pill text-primary fw-bold">
+             \ud83d\udc46 E\u011fitime ba\u015flamak veya devam etmek i\u00e7in sol men\u00fcden bir ders se\u00e7in.
+          </div>
+
+          <div id="resume-box" class="mt-4 text-start mx-auto" style="max-width:820px;"></div>
+
+          <div id="catalog-box" class="text-start my-5"></div>
+
+          <div class="mt-4 mb-5 d-flex flex-wrap justify-content-center gap-3">
+            <button class="btn btn-outline-primary rounded-pill fw-bold px-4 py-2" onclick="runWeakTopicAnalysis()">\ud83e\udde0 S\u0131ra\u00e7 Hoca: Eksik Konular\u0131m\u0131 Analiz Et</button>
+            <button class="btn btn-success rounded-pill fw-bold px-4 py-2" onclick="openChatPage()">\ud83d\udcac S\u0131n\u0131f Sohbetine Gir</button>
+          </div>
+          <div id="weak-topic-box" class="mb-5"></div>
+
+          <div id="class-status-box" class="text-start">
+            <div class="text-center p-4"><div class="spinner-border text-primary"></div><p class="mt-3 fw-bold text-muted">S\u0131n\u0131f durumu y\u00fckleniyor...</p></div>
+          </div>
+        </div>`;
+      loadClassStatus();
+      classStatusInterval = setInterval(loadClassStatus, 30000);
+      startBackgroundChatPolling();
+      loadResumeBox();
+      loadCatalog();
+    }
+
+    // YEN\u0130: Ana sayfada "Yar\u0131m Kalan Testlerin" kutusu (ba\u015fka cihazdan da devam edilebilir)
+    function loadResumeBox() {
+      google.script.run.withSuccessHandler(list => {
+        const b = document.getElementById('resume-box');
+        if (!b || !list || list.length === 0) return;
+        b.innerHTML = `
+          <div class="p-4 rounded-4 border border-warning" style="background:#fff8e1;">
+            <h5 class="fw-bold text-dark mb-1">\u23f3 Yar\u0131m Kalan Testlerin</h5>
+            <div class="small text-muted">Kald\u0131\u011f\u0131n soruya d\u00f6nmek i\u00e7in "Devam Et"e t\u0131kla.</div>
+            ${list.slice(0, 6).map(x => `
+              <div class="resume-item">
+                <div>
+                  <div class="fw-bold">${escapeHtml(x.ders)} \u2014 ${escapeHtml(x.title)}</div>
+                  <div class="small text-muted">${x.cevap}${x.toplam ? ' / ' + x.toplam : ''} soru i\u015faretli \u2022 Son: ${escapeHtml(x.guncelleme)}</div>
+                </div>
+                <button class="btn btn-warning fw-bold rounded-pill px-4" onclick="fetchAndRenderTest('${escJs(x.ders)}','${escJs(x.unite)}','${escJs(x.title)}','unite')">\u25b6\ufe0f Devam Et</button>
+              </div>`).join('')}
+          </div>`;
+      }).getMyProgressList(currentStudentEmail);
+    }
+
+    function loadCourse(dersAdi) {
+      closeSidebar();
+      stopVoice();
+      if(testTimerInterval) clearInterval(testTimerInterval);
+      leaveTest();
+      if (chatPageOpen) { stopChatPolling(); startBackgroundChatPolling(); }
+      if (classStatusInterval) { clearInterval(classStatusInterval); classStatusInterval = null; }
+      setView({ type: 'course', ders: dersAdi });
+      const dEsc = escJs(dersAdi);
+      document.getElementById('content-area').innerHTML = `
+        <button class="btn btn-sm btn-light border mb-4 fw-bold px-3 rounded-pill shadow-sm text-secondary" onclick="showWelcome()">
+          <i class="bi bi-arrow-left me-1"></i> Ana Ekrana D\u00f6n
+        </button>
+        <h3 class="text-primary fw-bold mb-3 border-bottom pb-3">${escapeHtml(dersAdi)}</h3>
+        <div id="course-meta"></div>
+        
+        <div class="alert bg-light border shadow-sm mb-4 p-4 text-center rounded-4">
+          <p class="text-muted mb-3">Bu derse ait resmi HTML e\u011fitim notlar\u0131n\u0131 okuyabilir ve sesli dinleyebilirsiniz.</p>
+          <button class="btn btn-dark fw-bold px-5 py-3 shadow rounded-pill" onclick="fetchHtmlNotes('${dEsc}')">\ud83d\udcd6 HTML Konu Anlat\u0131m\u0131n\u0131 A\u00e7</button>
+        </div>
+        <div id="html-notes-container" class="mb-4"></div>
+        <div id="resources-box" class="mb-4"></div>
+
+        <ul class="nav nav-pills nav-fill mb-4 bg-white rounded-pill shadow-sm p-2 border" style="border-radius:50px;">
+          <li class="nav-item"><button class="nav-link active fw-bold rounded-pill" data-bs-toggle="pill" data-bs-target="#tab-uniteler" onclick="stopVoice()">\ud83d\udcd8 \u00dcnite Testleri</button></li>
+          <li class="nav-item"><button class="nav-link fw-bold rounded-pill" data-bs-toggle="pill" data-bs-target="#tab-finaller" onclick="stopVoice()">\ud83c\udfaf S\u00fcreli Final Denemeleri</button></li>
+          <li class="nav-item"><button class="nav-link fw-bold rounded-pill" data-bs-toggle="pill" data-bs-target="#tab-cikmis" onclick="stopVoice()">\ud83c\udfc6 S\u00fcreli \u00c7\u0131km\u0131\u015f Sorular</button></li>
+        </ul>
+        
+        <div class="tab-content" id="course-tabs-content">
+          <div class="text-center py-5"><div class="spinner-border text-primary"></div><p class="mt-3 text-muted fw-bold">Testler ve ba\u015far\u0131 raporlar\u0131n\u0131z taran\u0131yor...</p></div>
+        </div>
+      `;
+
+      ensureCourses(() => renderCourseMeta(dersAdi));
+      loadResources(dersAdi, false);
+
+      google.script.run.withSuccessHandler(function(data) {
+        function listeUret(liste, renk, kategori) {
+          if (!liste || liste.length === 0) return `<div class="alert alert-light border p-4 text-center text-muted rounded-4">Bu kategoride hen\u00fcz i\u00e7erik bulunmuyor.</div>`;
+          let h = `<div class="list-group shadow-sm border-0 rounded-4 overflow-hidden">`;
+          liste.forEach(t => {
+            let durumRozeti = '', butonlar = '';
+            const dd = escJs(data.dersAdi), tid = escJs(t.testId), tad = escJs(t.testAdi);
+            const devamVar = (kategori === 'unite' && t.devam && t.devam.cevap > 0);
+            const devamBtn = devamVar ? `
+                <button class="btn btn-sm btn-primary fw-bold rounded-pill px-3 me-1" onclick="fetchAndRenderTest('${dd}', '${tid}', '${tad}', '${kategori}')">\u25b6\ufe0f Devam Et (${t.devam.cevap}${t.devam.toplam ? '/' + t.devam.toplam : ''})</button>
+                <button class="btn btn-sm btn-outline-secondary fw-bold rounded-pill px-3" onclick="restartTest('${dd}', '${tid}', '${tad}', '${kategori}')" title="Kay\u0131tl\u0131 ilerlemeyi sil, ba\u015ftan ba\u015fla">\u21ba Ba\u015ftan</button>` : '';
+            if (t.cozulduMu) {
+              durumRozeti = `
+                <div class="text-end me-0 me-md-3 mb-2 mb-md-0">
+                  <span class="badge bg-success mb-1 px-2 py-1">Net: ${Number(t.net).toFixed(2)}</span>
+                  <span class="badge bg-info text-dark mb-1 px-2 py-1">Puan: ${Number(t.puan).toFixed(1)}</span><br>
+                  <span class="badge bg-light text-dark border mb-1 px-2 py-1">\u2714 ${t.dogru} Do\u011fru</span>
+                  <span class="badge bg-light text-dark border mb-1 px-2 py-1">\u2718 ${t.yanlis} Yanl\u0131\u015f</span>
+                  <span class="badge bg-light text-dark border mb-1 px-2 py-1">\u25cb ${t.bos} Bo\u015f</span><br>
+                  <span class="badge bg-warning text-dark fw-bold px-2 py-1">\ud83c\udfc6 S\u0131ra: ${t.sira} / ${t.toplamKatilimci}</span>
+                  <span class="badge bg-secondary px-2 py-1" title="S\u0131ralamada bu de\u011fer kullan\u0131l\u0131r">En y\u00fcksek net: ${Number(t.enYuksekNet).toFixed(2)}</span>
+                </div>`;
+              let pdfBtn = t.pdfUrl ? `<a href="${t.pdfUrl}" target="_blank" class="btn btn-sm btn-outline-danger me-2 rounded-pill fw-bold px-3">\ud83d\udcc4 PDF</a>` : '';
+              butonlar = `
+                ${pdfBtn}
+                <button class="btn btn-sm btn-outline-primary me-2 rounded-pill fw-bold px-3" onclick="testRaporunuAc('${dd}', '${tid}', '${kategori}')">\ud83d\udcca Rapor</button>
+                ${devamVar ? devamBtn : `<button class="btn btn-sm btn-warning fw-bold rounded-pill px-3" onclick="fetchAndRenderTest('${dd}', '${tid}', '${tad}', '${kategori}', true)">\ud83d\udd04 Tekrar</button>`}`;
+            } else {
+              durumRozeti = devamVar ? `<span class="badge bg-warning text-dark me-3 px-3 py-2 rounded-pill">\u23f3 Yar\u0131m Kald\u0131</span>` : `<span class="badge bg-secondary me-3 px-3 py-2 rounded-pill">Hen\u00fcz \u00c7\u00f6z\u00fclmedi</span>`;
+              butonlar = devamVar ? devamBtn : `<button class="btn btn-sm btn-success px-4 py-2 fw-bold rounded-pill shadow-sm" onclick="fetchAndRenderTest('${dd}', '${tid}', '${tad}', '${kategori}')">\u25b6\ufe0f Teste Ba\u015fla</button>`;
+            }
+
+            h += `
+              <div class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-md-center py-4 border-bottom">
+                <div class="mb-3 mb-md-0">
+                  <h6 class="mb-1 fw-bold text-dark fs-5">${escapeHtml(/^\d+$/.test(String(t.testAdi)) ? "\u00dcnite " + t.testAdi : t.testAdi)}</h6>
+                  <small class="text-muted fw-semibold">
+                    <span class="badge bg-light text-dark border">${t.soruSayisi} Soru</span> 
+                    ${kategori !== 'unite' ? `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger ms-1">\u23f1 ${t.soruSayisi*1.5} Dk S\u00fcreli</span>` : ''} 
+                    ${t.tekrarSayisi > 0 ? `<span class="badge bg-info bg-opacity-10 text-info border border-info ms-1">${t.tekrarSayisi} kez \u00e7\u00f6z\u00fcld\u00fc</span>` : ''}
+                  </small>
+                </div>
+                <div class="d-flex flex-column flex-md-row align-items-md-center">
+                  ${durumRozeti} 
+                  <div class="d-flex mt-2 mt-md-0 flex-wrap">${butonlar}</div>
+                </div>
+              </div>`;
+          });
+          h += `</div>`;
+          return h;
+        }
+
+        let tabsHtml = `
+          <div class="tab-pane fade show active" id="tab-uniteler">${listeUret(data.uniteler, 'primary', 'unite')}</div>
+          <div class="tab-pane fade" id="tab-finaller">${listeUret(data.denemeler, 'danger', 'final')}</div>
+          <div class="tab-pane fade" id="tab-cikmis">${listeUret(data.cikmislar, 'success', 'cikmis')}</div>
+        `;
+        document.getElementById('course-tabs-content').innerHTML = tabsHtml;
+      }).getStudentCourseReports(currentStudentEmail, dersAdi);
+    }
+
+    function fetchHtmlNotes(dersAdi) {
+      stopVoice();
+      const container = document.getElementById('html-notes-container');
+      container.innerHTML = '<div class="text-center p-5 bg-white rounded-4 shadow-sm border"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div><p class="mt-3 text-muted fw-bold">Notlar y\u00fckleniyor...</p></div>';
+      google.script.run.withSuccessHandler(function(contentHtml) {
+        let audioBar = `
+          <div class="audio-control-bar d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 bg-white p-3 rounded-4 shadow-sm border mb-4">
+            <div class="d-flex align-items-center flex-wrap justify-content-center gap-2">
+              <span class="fw-bold text-dark fs-6 bg-light px-3 py-2 rounded-pill border">\ud83c\udfa7 Sesli Asistan:</span>
+              <button class="btn btn-outline-success rounded-pill fw-bold px-3 py-2" onclick="speakText(document.getElementById('notlar-icerik-alani').innerText)">\ud83d\udd0a Ba\u015ftan Oku</button>
+              <button class="btn btn-outline-primary rounded-pill fw-bold px-3 py-2" onclick="speakSelectedText()">\ud83d\udde3\ufe0f Se\u00e7ili Metni Oku</button>
+            </div>
+            <div>
+              <button class="btn btn-danger rounded-pill fw-bold px-4 py-2 shadow-sm" onclick="stopVoice()">\u23f9\ufe0f Sustur</button>
+            </div>
+          </div>
+          <div id="notlar-icerik-alani" class="bg-white p-4 p-md-5 rounded-4 shadow-sm border" style="font-size: 1.1rem; line-height: 1.8;">${contentHtml}</div>
+        `;
+        container.innerHTML = audioBar;
+      }).getCourseHtmlContent(dersAdi);
+    }
+
+    // ==========================================================
+    // TEST RAPORU (KARNE) MODALI  \u2014  YEN\u0130: AI analizi iste\u011fe ba\u011fl\u0131
+    // ==========================================================
+    function aiAskCardHtml(boxId, dEsc, uEsc, ctx, disabled) {
+      return `
+        <div id="${boxId}" class="p-4 bg-primary bg-opacity-10 rounded-4 shadow-sm mb-4 border border-primary border-opacity-25 text-center">
+          <h5 class="text-primary fw-bold mb-2"><i class="bi bi-robot"></i> S\u0131ra\u00e7 Hoca Analizi <span class="badge bg-secondary ms-1">\u0130ste\u011fe Ba\u011fl\u0131</span></h5>
+          <p class="text-muted mb-3">Yapay zek\u00e2 analizi otomatik haz\u0131rlanmaz. \u0130stersen S\u0131ra\u00e7 Hoca bu s\u0131nav\u0131 de\u011ferlendirsin; haz\u0131rlan\u0131nca PDF raporuna da eklenir.</p>
+          <button id="${boxId}-btn" class="btn btn-primary fw-bold rounded-pill px-5 py-2" ${disabled ? 'disabled' : ''} onclick="aiAnalizIste('${dEsc}', '${uEsc}', '${ctx}')">\ud83e\udde0 Analizi Haz\u0131rla</button>
+        </div>`;
+    }
+    function aiResultCardHtml(boxId, text) {
+      const sid = regSpeak(text);
+      return `
+        <div id="${boxId}" class="p-4 bg-primary bg-opacity-10 rounded-4 shadow-sm mb-4 border border-primary border-opacity-25">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
+            <h5 class="text-primary fw-bold m-0"><i class="bi bi-robot"></i> S\u0131ra\u00e7 Hoca'n\u0131n S\u0131nav Analizi</h5>
+            <button class="btn btn-sm btn-success rounded-pill px-4 fw-bold shadow-sm" onclick="speakById('${sid}')">\ud83d\udd0a Sesli Dinle</button>
+          </div>
+          <p class="mb-0 text-dark fw-semibold" style="line-height:1.7; font-size: 1.05rem;">${escapeHtml(text).replace(/\n/g, '<br>')}</p>
+        </div>`;
+    }
+
+    // \u00d6\u011frenci "Analizi Haz\u0131rla"ya bas\u0131nca \u00e7al\u0131\u015f\u0131r (ctx: 'finish' = s\u0131nav sonu ekran\u0131, 'modal' = karne penceresi)
+    function aiAnalizIste(dersAdi, uniteNo, ctx) {
+      const boxId = (ctx === 'finish') ? 'ai-karne-analizi' : 'rapor-ai-box';
+      const box = document.getElementById(boxId);
+      if (!box) return;
+      const prev = box.outerHTML;
+      box.innerHTML = '<div class="d-flex align-items-center justify-content-center flex-column text-center gap-3 p-3"><div class="spinner-grow text-primary" style="width:2.5rem;height:2.5rem;"></div><h5 class="m-0 fw-bold text-primary">S\u0131ra\u00e7 Hoca s\u0131nav\u0131n\u0131 de\u011ferlendiriyor ve raporunu g\u00fcncelliyor...</h5></div>';
+      function restore(msg) {
+        const b = document.getElementById(boxId);
+        if (b) b.outerHTML = prev;
+        if (msg) alert(msg);
+      }
+      google.script.run.withSuccessHandler(res => {
+        if (!res || !res.success) { restore((res && res.message) || 'Analiz haz\u0131rlanamad\u0131.'); return; }
+        const b = document.getElementById(boxId);
+        if (b) b.outerHTML = aiResultCardHtml(boxId, res.aiAnalizi);
+        if (res.pdfUrl) {
+          const pdfAlani = document.getElementById('pdf-alani');
+          if (pdfAlani && ctx === 'finish') {
+            pdfAlani.innerHTML = `<a href="${res.pdfUrl}" target="_blank" class="btn btn-danger btn-lg fw-bold shadow-sm px-5 py-3 rounded-pill"><i class="bi bi-file-earmark-pdf-fill"></i> G\u00fcncel PDF Raporunu \u0130ndir (Analizli)</a><p class="text-muted fw-semibold small mt-3">Yapay zek\u00e2 analizi PDF raporuna eklendi.</p>`;
+          }
+        }
+        if (ctx === 'modal') loadRaporIcerik(dersAdi, uniteNo); // PDF ba\u011flant\u0131s\u0131 da yenilensin
+      }).withFailureHandler(() => restore('Analiz \u015fu an haz\u0131rlanamad\u0131, l\u00fctfen biraz sonra tekrar deneyin.'))
+        .generateAiAnalysisForTest(currentStudentEmail, dersAdi, uniteNo, false);
+    }
+
+    let raporCtx = { ders: '', test: '', kategori: 'unite' };
+
+    function testRaporunuAc(dersAdi, testAdi, kategori) {
+      stopVoice();
+      raporCtx = { ders: dersAdi, test: testAdi, kategori: kategori || 'unite' };
+      const modalEl = document.getElementById('testRaporModal');
+      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+      document.getElementById('raporModalBaslik').innerText = `${dersAdi} - ${testAdi} Karnesi`;
+      document.getElementById('raporModalIcerik').innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div><p class="mt-3 fw-bold text-muted">Haz\u0131rlan\u0131yor...</p></div>`;
+
+      document.getElementById('modalTekrarCozBtn').onclick = function() {
+        stopVoice(); modal.hide();
+        fetchAndRenderTest(dersAdi, testAdi, testAdi, raporCtx.kategori, true);
+      };
+      modal.show();
+      loadRaporIcerik(dersAdi, testAdi);
+    }
+
+    function loadRaporIcerik(dersAdi, testAdi) {
+      const dEsc = escJs(dersAdi), uEsc = escJs(testAdi);
+      google.script.run.withSuccessHandler(function(rep) {
+        let sonCozum = rep.ogrenciGecmisi && rep.ogrenciGecmisi.length > 0 ? rep.ogrenciGecmisi[rep.ogrenciGecmisi.length - 1] : null;
+        let karneHtml = '';
+        if (sonCozum) {
+          let pdfLinkButonu = sonCozum.pdfUrl ? `<div class="mb-4 text-center"><a href="${sonCozum.pdfUrl}" target="_blank" class="btn btn-danger btn-lg fw-bold shadow px-5 py-3 rounded-pill">\ud83d\udce5 Resm\u00ee \u00c7\u00f6z\u00fcm PDF'ini A\u00e7 / \u0130ndir</a></div>` : '';
+          let aiHtml = sonCozum.aiAnalizi
+            ? aiResultCardHtml('rapor-ai-box', sonCozum.aiAnalizi)
+            : aiAskCardHtml('rapor-ai-box', dEsc, uEsc, 'modal', false);
+
+          karneHtml = `
+            <div class="row justify-content-center g-3 mb-4 text-center">
+              <div class="col-6 col-md-2"><div class="p-3 border-0 rounded-4 bg-success text-white shadow-sm"><h3 class="fw-bold mb-0">${sonCozum.dogru}</h3><small class="text-white-50 text-uppercase fw-bold">Do\u011fru</small></div></div>
+              <div class="col-6 col-md-2"><div class="p-3 border-0 rounded-4 bg-danger text-white shadow-sm"><h3 class="fw-bold mb-0">${sonCozum.yanlis}</h3><small class="text-white-50 text-uppercase fw-bold">Yanl\u0131\u015f</small></div></div>
+              <div class="col-6 col-md-2"><div class="p-3 border-0 rounded-4 bg-secondary text-white shadow-sm"><h3 class="fw-bold mb-0">${sonCozum.bos}</h3><small class="text-white-50 text-uppercase fw-bold">Bo\u015f</small></div></div>
+              <div class="col-6 col-md-2"><div class="p-3 border-0 rounded-4 bg-primary text-white shadow-sm"><h3 class="fw-bold mb-0">${sonCozum.net}</h3><small class="text-white-50 text-uppercase fw-bold">Net</small></div></div>
+              <div class="col-6 col-md-2"><div class="p-3 border-0 rounded-4 bg-dark text-white shadow-sm"><h3 class="fw-bold mb-0 text-warning">${sonCozum.puan}</h3><small class="text-white-50 text-uppercase fw-bold">Puan</small></div></div>
+            </div>
+            ${pdfLinkButonu} ${aiHtml}`;
+
+          if (sonCozum.soruDetaylari && sonCozum.soruDetaylari.length > 0) {
+            karneHtml += `<h5 class="fw-bold text-dark border-bottom pb-2 mb-4 mt-5"><i class="bi bi-card-checklist"></i> Soru Baz\u0131nda Analiz</h5><div class="mb-4">`;
+            sonCozum.soruDetaylari.forEach(s => {
+              let rozet = s.durum === "Do\u011fru" ? '<span class="badge bg-success px-3 py-2 rounded-pill fs-6"><i class="bi bi-check-circle-fill"></i> Do\u011fru</span>' : s.durum === "Yanl\u0131\u015f" ? '<span class="badge bg-danger px-3 py-2 rounded-pill fs-6"><i class="bi bi-x-circle-fill"></i> Yanl\u0131\u015f</span>' : '<span class="badge bg-primary px-3 py-2 rounded-pill fs-6">\u25cb Bo\u015f</span>';
+              let cerceve = s.durum === "Do\u011fru" ? 'border-success' : s.durum === "Yanl\u0131\u015f" ? 'border-danger' : 'border-primary';
+              
+              // B\u00fct\u00fcn \u015f\u0131klar (A,B,C,D,E) ve renklendirmeleri
+              let seceneklerHtml = "";
+              if (s.secenekler) {
+                  ['A', 'B', 'C', 'D', 'E'].forEach(harf => {
+                      if (s.secenekler[harf]) {
+                          let bgClass = "bg-light text-dark"; // Di\u011fer \u015f\u0131klar soluk gri kal\u0131r
+                          let opacity = "opacity: 0.5;";
+                          
+                          if (harf === s.dogruCevap && s.durum !== "Bo\u015f") {
+                              bgClass = "bg-success text-white border-success shadow-sm fw-bold"; // Do\u011fru bilinen/olan Ye\u015fil
+                              opacity = "opacity: 1;";
+                          } else if (harf === s.verilenCevap && s.durum === "Yanl\u0131\u015f") {
+                              bgClass = "bg-danger text-white border-danger shadow-sm fw-bold"; // Yanl\u0131\u015f se\u00e7ilen K\u0131rm\u0131z\u0131
+                              opacity = "opacity: 1;";
+                          } else if (harf === s.dogruCevap && s.durum === "Bo\u015f") {
+                              bgClass = "bg-primary text-white border-primary shadow-sm fw-bold"; // Bo\u015f b\u0131rak\u0131lm\u0131\u015fsa do\u011fru cevap MAV\u0130
+                              opacity = "opacity: 1;";
+                          }
+
+                          seceneklerHtml += `<div class="q-rep-opt ${bgClass}" style="${opacity} transition: all 0.3s;"><span class="q-letter">${harf})</span><span>${s.secenekler[harf]}</span></div>`;
+                      }
+                  });
+                  seceneklerHtml = `<div class="mt-3 mb-3 fs-6">${seceneklerHtml}</div>`;
+              } else {
+                  // Eskiden \u00e7\u00f6z\u00fclm\u00fc\u015f / s\u0131k\u0131\u015ft\u0131r\u0131lm\u0131\u015f kay\u0131tlar i\u00e7in klasik g\u00f6r\u00fcn\u00fcm
+                  seceneklerHtml = `
+                    <div class="bg-light p-3 rounded-3 mb-3 border">
+                      <span class="me-4 d-block d-md-inline mb-2 mb-md-0"><span class="text-muted fw-bold">Verdi\u011finiz Cevap:</span> <span class="fw-bold fs-6">${escapeHtml(s.verilenCevap)}</span></span>
+                      <span class="text-success fw-bold"><span class="text-muted fw-bold">Do\u011fru Cevap:</span> <span class="fs-6">${escapeHtml(s.dogruCevap)}</span></span>
+                    </div>`;
+              }
+
+              const sid = regSpeak(`Soru ${s.soruNo}: ${s.metin}. Do\u011fru cevap: ${s.dogruCevap}. ${s.cozum ? '\u00c7\u00f6z\u00fcm: ' + s.cozum : ''}`);
+              karneHtml += `
+                <div class="card mb-4 shadow-sm rounded-4 border-start border-5 ${cerceve}">
+                  <div class="card-body p-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-3">
+                      <div class="q-rep-title"><span class="badge bg-primary rounded-pill me-2">Soru ${s.soruNo}</span>${s.metin}</div>
+                      <div class="d-flex align-items-center gap-2">
+                        ${rozet}
+                        <button class="btn btn-outline-secondary rounded-pill btn-sm fw-bold px-3 py-2" onclick="speakById('${sid}')">\ud83d\udd0a Oku</button>
+                      </div>
+                    </div>
+                    
+                    ${seceneklerHtml}
+
+                    ${s.cozum ? `<div class="cozum-kutusu mt-2 bg-info bg-opacity-10 border-info rounded-3"><div class="cz-title" style="color:#0aa2c0;">\ud83d\udca1 \u00c7\u00f6z\u00fcm Yolu</div><div class="cz-text">${s.cozum}</div></div>` : ''}
+                  </div>
+                </div>`;
+            });
+            
+            karneHtml += `</div>`;
+          }
+        }
+        
+        let tabloHtml = `
+          <h5 class="fw-bold text-dark border-bottom pb-2 mb-4 mt-5"><i class="bi bi-bar-chart-steps"></i> S\u0131n\u0131f Liderlik Tablosu</h5>
+          <div class="table-responsive rounded-4 shadow-sm border">
+            <table class="table table-hover align-middle mb-0 bg-white">
+              <thead class="table-light text-secondary">
+                <tr><th class="py-3">S\u0131ra</th><th class="py-3">\u00d6\u011frenci Ad\u0131</th><th class="text-center py-3">En Y\u00fcksek Net</th><th class="text-center py-3">D / Y</th><th class="text-center py-3">Puan</th><th class="text-center py-3">\u00c7\u00f6zme</th></tr>
+              </thead>
+              <tbody>`;
+        
+        rep.leaderboard.forEach(item => {
+          let benMiyim = (item.email === currentStudentEmail);
+          let rowClass = benMiyim ? "table-warning fw-bold" : "";
+          let rankBadge = item.sira === 1 ? '<span class="fs-4">\ud83e\udd47 1</span>' : item.sira === 2 ? '<span class="fs-5">\ud83e\udd48 2</span>' : item.sira === 3 ? '<span class="fs-5">\ud83e\udd49 3</span>' : `<span class="fw-bold text-muted">${item.sira}</span>`;
+          
+          tabloHtml += `
+            <tr class="${rowClass}">
+              <td class="text-center" style="width: 80px;">${rankBadge}</td>
+              <td class="py-3 fs-6">${escapeHtml(item.name)} ${benMiyim ? ' <span class="badge bg-primary ms-2 rounded-pill px-2">Siz</span>' : ''}</td>
+              <td class="text-center text-primary fw-bold fs-5">${item.maxNet}</td>
+              <td class="text-center fw-semibold"><span class="text-success">${item.dogru} D</span> / <span class="text-danger">${item.yanlis} Y</span></td>
+              <td class="text-center fw-bold text-dark fs-6">${item.puan}</td>
+              <td class="text-center text-muted"><span class="badge bg-light text-dark border px-2 py-1">${item.attemptCount} Deneme</span></td>
+            </tr>`;
+        });
+        tabloHtml += `</tbody></table></div>`;
+        // Karne penceresi bu arada kapat\u0131ld\u0131ysa/ba\u015fka teste ge\u00e7ildiyse eski sonu\u00e7 yaz\u0131lmas\u0131n
+        if (raporCtx.ders === dersAdi && raporCtx.test === testAdi) {
+          document.getElementById('raporModalIcerik').innerHTML = karneHtml + tabloHtml;
+        }
+      }).withFailureHandler(() => {
+        document.getElementById('raporModalIcerik').innerHTML = '<div class="alert alert-warning">Karne \u015fu an al\u0131namad\u0131, l\u00fctfen tekrar deneyin.</div>';
+      }).getTestLeaderboardAndReport(currentStudentEmail, dersAdi, testAdi);
+    }
+
+    // ==========================================================
+    // SINAV \u00c7\u0130Z\u0130M\u0130  \u2014  YEN\u0130: kald\u0131\u011f\u0131 yerden devam (\u00fcnite testleri), soru haritas\u0131, i\u015faretleme
+    // ==========================================================
+    function fetchAndRenderTest(dersAdi, uniteNo, titleStr, kategori, fresh) {
+      stopVoice();
+      if(testTimerInterval) clearInterval(testTimerInterval);
+      leaveTest();
+      if (chatPageOpen) { stopChatPolling(); startBackgroundChatPolling(); }
+      if (classStatusInterval) { clearInterval(classStatusInterval); classStatusInterval = null; }
+      const isTimed = (kategori === 'final' || kategori === 'cikmis');
+      const dEsc = escJs(dersAdi);
+
+      document.getElementById('content-area').innerHTML = '<div class="text-center p-5 bg-white rounded-4 shadow-sm border"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div><p class="mt-4 fw-bold text-muted fs-5">S\u0131nav Ka\u011f\u0131d\u0131n\u0131z Haz\u0131rlan\u0131yor...</p></div>';
+
+      // "Ba\u015ftan ba\u015fla / Tekrar \u00e7\u00f6z": kay\u0131tl\u0131 ilerlemeyi hem cihazdan hem sunucudan sil
+      if (fresh && !isTimed) {
+        try { localStorage.removeItem('isg_prog|' + currentStudentEmail + '|' + dersAdi + '|' + uniteNo); } catch (e) {}
+        google.script.run.clearTestProgress(currentStudentEmail, dersAdi, uniteNo);
+      }
+      
+      google.script.run.withSuccessHandler(function(rawQuestions) {
+        const questions = normalizeQuestions(rawQuestions);
+        currentQuestions = questions;
+        
+        if(questions.length === 0) {
+          document.getElementById('content-area').innerHTML = `<button class="btn btn-sm btn-outline-secondary mb-4 fw-bold rounded-pill px-4" onclick="loadCourse('${dEsc}')">\u2b05 Derse D\u00f6n</button><div class="alert alert-danger p-4 border-0 shadow-sm rounded-4"><strong>Bilgi:</strong> Bu test hen\u00fcz sisteme eklenmemi\u015f.</div>`; 
+          return;
+        }
+
+        if (isTimed || fresh) {
+          renderTest(dersAdi, uniteNo, titleStr, kategori, questions, null);
+        } else {
+          const local = loadLocalProgress(dersAdi, uniteNo);
+          google.script.run.withSuccessHandler(srv => {
+            renderTest(dersAdi, uniteNo, titleStr, kategori, questions, pickProgress(local, srv));
+          }).withFailureHandler(() => {
+            renderTest(dersAdi, uniteNo, titleStr, kategori, questions, pickProgress(local, null));
+          }).getTestProgress(currentStudentEmail, dersAdi, uniteNo);
+        }
+      }).withFailureHandler(() => {
+        document.getElementById('content-area').innerHTML = `<button class="btn btn-sm btn-outline-secondary mb-4 fw-bold rounded-pill px-4" onclick="loadCourse('${dEsc}')">\u2b05 Derse D\u00f6n</button><div class="alert alert-danger p-4 border-0 shadow-sm rounded-4">Sorular y\u00fcklenemedi, l\u00fctfen tekrar deneyin.</div>`;
+      }).getUnitQuestions(dersAdi, uniteNo);
+    }
+
+    function renderTest(dersAdi, uniteNo, titleStr, kategori, questions, prog) {
+      const isTimed = (kategori === 'final' || kategori === 'cikmis');
+      const dEsc = escJs(dersAdi), uEsc = escJs(uniteNo), tEsc = escJs(titleStr), kEsc = escJs(kategori);
+
+      // Kay\u0131tl\u0131 ilerlemeyi bu testin sorular\u0131na g\u00f6re s\u00fcz
+      const validIds = {};
+      questions.forEach(q => { validIds[q.id] = true; });
+      let answers = {}, flags = {};
+      if (prog) {
+        Object.keys(prog.answers || {}).forEach(k => { if (validIds[k] && prog.answers[k]) answers[k] = prog.answers[k]; });
+        Object.keys(prog.flags || {}).forEach(k => { if (validIds[k] && prog.flags[k]) flags[k] = true; });
+      }
+      const idxById = {};
+      questions.forEach((q, i) => { idxById[q.id] = i; });
+      testState = { active: true, timed: isTimed, finished: false, persist: !isTimed, ders: dersAdi, unite: uniteNo, title: titleStr, kategori: kategori,
+                    answers: answers, flags: flags, pos: prog ? (parseInt(prog.pos) || 0) : 0, dirty: false, idxById: idxById };
+      currentQuestions = questions;
+
+      // Bulunulan yeri hat\u0131rla: \u00fcnite testi -> ayn\u0131 test; s\u00fcreli s\u0131nav -> ders sayfas\u0131
+      if (isTimed) setView({ type: 'course', ders: dersAdi });
+      else setView({ type: 'test', ders: dersAdi, unite: uniteNo, title: titleStr });
+
+      const answeredCount = Object.keys(answers).length;
+
+      let html = `
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+          <button class="btn btn-light border fw-bold rounded-pill px-4 shadow-sm text-secondary" onclick="loadCourse('${dEsc}')"><i class="bi bi-arrow-left"></i> ${isTimed ? 'Vazge\u00e7 ve D\u00f6n' : 'Kaydet ve \u00c7\u0131k'}</button>
+          <div class="bg-light border rounded-pill px-2 py-1 shadow-sm d-flex gap-2">
+            <button class="btn btn-sm btn-primary rounded-pill fw-bold px-3 py-2" onclick="speakSelectedText()">\ud83d\udde3\ufe0f Se\u00e7ili Metni Oku</button>
+            <button class="btn btn-sm btn-danger rounded-pill fw-bold px-3 py-2" onclick="stopVoice()">\ud83d\udd07 Sustur</button>
+          </div>
+        </div>`;
+
+      if (prog && answeredCount > 0) {
+        html += `
+          <div class="alert alert-info border-0 shadow-sm rounded-4 d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+            <div class="fw-bold">\u23f3 Kald\u0131\u011f\u0131n yerden devam ediyorsun: ${answeredCount} / ${questions.length} soru i\u015faretli. Cevaplar\u0131n otomatik kaydedilir.</div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-primary fw-bold rounded-pill px-3" onclick="gotoNextEmpty()">\u23ed Bo\u015f soruya git</button>
+              <button class="btn btn-sm btn-outline-secondary fw-bold rounded-pill px-3" onclick="restartTest('${dEsc}', '${uEsc}', '${tEsc}', '${kEsc}')">\u21ba Ba\u015ftan Ba\u015fla</button>
+            </div>
+          </div>`;
+      }
+
+      // ZAMANLAYICI (final veya \u00e7\u0131km\u0131\u015f sorular)
+      if (isTimed) {
+        html += `
+          <div id="sticky-timer-bar" class="sticky-timer rounded-4 border-2 shadow mb-4 px-4 py-3 bg-white">
+            <div class="d-flex align-items-center gap-2">
+               <div class="spinner-grow spinner-grow-sm text-danger" role="status"></div>
+               <span class="fw-bold fs-5 text-dark">S\u00fcreniz:</span>
+            </div>
+            <div class="bg-dark text-white rounded-3 px-4 py-2 shadow-inner">
+               <span id="test-timer-display" class="fw-bold fs-2 text-warning" style="font-variant-numeric: tabular-nums;">00:00</span>
+            </div>
+          </div>
+        `;
+      }
+
+      html += `<div id="karne-alani"></div>
+               <div class="bg-white p-4 rounded-4 shadow-sm border mb-4 text-center q-title-card">
+                 <h4 class="fw-bold text-primary mb-2" style="font-size:1.25rem; overflow-wrap:anywhere;">${escapeHtml(dersAdi)} - ${escapeHtml(titleStr)}</h4>
+                 <div class="d-inline-block bg-light px-4 py-2 rounded-pill border text-muted fw-bold">
+                   Toplam ${questions.length} Soru &nbsp;|&nbsp; 4 Yanl\u0131\u015f 1 Do\u011fruyu G\u00f6t\u00fcr\u00fcr
+                 </div>
+                 ${isTimed ? '<div class="alert alert-danger mt-3 mb-0 rounded-3 border-0 fw-bold"><i class="bi bi-exclamation-triangle-fill"></i> Dikkat: S\u00fcreniz bitti\u011finde sistem otomatik olarak ka\u011f\u0131d\u0131n\u0131z\u0131 teslim eder! S\u00fcreli s\u0131navlarda ilerleme kaydedilmez.</div>' : '<div class="small text-muted mt-3">\ud83d\udcbe Cevaplar\u0131n\u0131z otomatik kaydedilir. Bilgisayar\u0131 kapatsan\u0131z bile kald\u0131\u011f\u0131n\u0131z sorudan devam edersiniz.</div>'}
+               </div>
+
+               <div id="q-map-card" class="bg-white p-3 rounded-4 shadow-sm border mb-4">
+                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                   <span class="fw-bold text-dark">\ud83d\uddfa\ufe0f Soru Haritas\u0131 <small class="text-muted fw-normal">(numaraya t\u0131klay\u0131nca o soruya gider)</small></span>
+                   <small><span class="badge bg-success">Cevapland\u0131</span> <span class="badge bg-warning text-dark">\u0130\u015faretli</span> <span class="badge bg-secondary">Bo\u015f</span></small>
+                 </div>
+                 <div class="d-flex flex-wrap gap-2" id="q-palette">
+                   ${questions.map((q, i) => `<button class="btn pal-btn btn-outline-secondary" id="pal-${q.id}" onclick="gotoQuestion(${i})">${i + 1}</button>`).join('')}
+                 </div>
+               </div>`;
+
+      questions.forEach((q, index) => {
+        const optsHtml = ['A', 'B', 'C', 'D', 'E'].filter(h => h === 'A' || h === 'B' || q.secenekler[h]).map(h => `
+                <div class="form-check p-3 border rounded-3 bg-light hover-bg-white transition-all"><input class="form-check-input" type="radio" name="s${q.id}" id="s${q.id}${h}" value="${h}" ${answers[q.id] === h ? 'checked' : ''} onchange="onAnswerChange(${q.id}, '${h}')"><label class="form-check-label cursor-pointer" for="s${q.id}${h}"><span class="q-letter">${h})</span><span>${q.secenekler[h]}</span></label></div>`).join('');
+
+        html += `
+        <div class="card mb-4 shadow-sm bg-white rounded-4 border-0 q-card" id="card-${q.id}">
+          <div class="card-body q-body">
+            <div class="q-head">
+              <span class="q-num">Soru ${index + 1} <small>/ ${questions.length}</small></span>
+              <div class="q-tools">
+                <button class="btn btn-sm btn-outline-warning rounded-pill fw-bold" id="flag-${q.id}" onclick="toggleFlag(${q.id})" title="Sonra d\u00f6nmek i\u00e7in i\u015faretle">\ud83d\udea9 <span class="q-tool-text">\u0130\u015faretle</span></button>
+                <button class="btn btn-sm btn-outline-secondary rounded-pill fw-bold" onclick="speakSingleQuestion(${index})" title="Soruyu Seslendir">\ud83d\udd0a <span class="q-tool-text">Oku</span></button>
+              </div>
+            </div>
+
+            <div class="q-text">${q.metin}</div>
+
+            <div class="q-options">${optsHtml}</div>
+            <div class="q-clear"><button class="btn btn-sm btn-link text-muted" onclick="clearAnswer(${q.id})">Se\u00e7imi temizle</button></div>
+
+            <div id="cozum-${q.id}" class="cozum-kutusu hidden mt-3 bg-success bg-opacity-10 border-success rounded-3"><div class="cz-title"><i class="bi bi-check-circle-fill"></i> Do\u011fru Cevap: ${q.cevap}</div><div class="cz-text">${q.cozum}</div></div>
+          </div>
+        </div>`;
+      });
+
+      html += `<div id="bitir-alani" class="mt-5"><button class="btn btn-success btn-lg w-100 py-4 fw-bolder fs-4 shadow-lg rounded-pill" onclick="confirmFinish('${dEsc}', '${uEsc}')">S\u0131nav\u0131 Bitir ve Sonucumu G\u00f6ster</button></div>`;
+      
+      document.getElementById('content-area').innerHTML = html;
+
+      // CSS Helper for hover effects in options
+      if (!document.getElementById('hover-style')) {
+        let style = document.createElement('style');
+        style.id = 'hover-style';
+        style.innerHTML = `.hover-bg-white:hover { background-color: #fff !important; border-color: #0d6efd !important; cursor: pointer; } .cursor-pointer { cursor: pointer; }`;
+        document.head.appendChild(style);
+      }
+
+      questions.forEach(q => paintFlag(q.id));
+      refreshPalette();
+      updatePill();
+      setSaveStatus(prog && answeredCount > 0 ? 'saved' : '');
+
+      // Kald\u0131\u011f\u0131 soruya g\u00f6t\u00fcr (yoksa en ba\u015fa)
+      if (prog && answeredCount > 0) {
+        setTimeout(() => {
+          const i = firstEmptyIndex(Math.min(testState.pos + 1, questions.length - 1));
+          gotoQuestion(i === -1 ? Math.min(testState.pos, questions.length - 1) : i);
+        }, 350);
+      } else {
+        scrollContentTop();
+      }
+
+      // ZAMANLAYICIYI BA\u015eLATMA
+      if (isTimed) {
+        let totalSeconds = questions.length * 90; // Soru ba\u015f\u0131na 90 sn (1.5 dk)
+        startTestTimer(totalSeconds, dersAdi, uniteNo);
+      }
+    }
+
+    // ZAMANLAYICI MOTORU
+    function startTestTimer(duration, dersAdi, uniteNo) {
+      testTimeRemaining = duration;
+      updateTimerDisplay();
+
+      testTimerInterval = setInterval(() => {
+        testTimeRemaining--;
+        updateTimerDisplay();
+
+        if (testTimeRemaining <= 0) {
+          clearInterval(testTimerInterval);
+          
+          let audio = document.getElementById('alarm-sound');
+          if(audio) audio.play().catch(e => console.log("Ses oynat\u0131lamad\u0131."));
+
+          speakText("S\u00fcreniz doldu. S\u0131nav\u0131n\u0131z otomatik olarak teslim ediliyor. Ba\u015far\u0131 tablonuz haz\u0131rlan\u0131yor.");
+          
+          finishTest(dersAdi, uniteNo);
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      let display = document.getElementById('test-timer-display');
+      let bar = document.getElementById('sticky-timer-bar');
+      if (!display) return;
+
+      let m = Math.floor(testTimeRemaining / 60);
+      let s = testTimeRemaining % 60;
+      display.innerText = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
+
+      if (testTimeRemaining <= 60 && testTimeRemaining > 0) {
+        display.classList.add('pulse-timer');
+        if(bar) bar.style.borderBottomColor = '#dc3545';
+      }
+    }
+
+    // TEST\u0130 B\u0130T\u0130R VE G\u00d6NDER
+    function finishTest(dersAdi, uniteNo) {
+      if (testState.finished) return; // \u00e7ift g\u00f6nderimi engelle (s\u00fcre dolmas\u0131 + buton)
+      stopVoice();
+      if(testTimerInterval) clearInterval(testTimerInterval);
+      clearTimeout(syncTimer);
+      testState.finished = true;
+      testState.active = false;
+      const pill = document.getElementById('test-pill');
+      if (pill) pill.classList.add('hidden');
+      const mapCard = document.getElementById('q-map-card');
+      if (mapCard) mapCard.classList.add('hidden');
+      
+      let timerBar = document.getElementById('sticky-timer-bar');
+      if(timerBar) timerBar.classList.add('hidden'); 
+
+      let dogru = 0; let yanlis = 0; let bos = 0; let soruDetaylari = [];
+      let yanlisSorularListesi = []; // Yanl\u0131\u015f yap\u0131lan soru numaralar\u0131
+      
+      currentQuestions.forEach((q, idx) => {
+        let seciliSik = document.querySelector(`input[name="s${q.id}"]:checked`);
+        let kartDiv = document.getElementById(`card-${q.id}`);
+        let cozumDiv = document.getElementById(`cozum-${q.id}`);
+        let soruNo = idx + 1;
+
+        if(cozumDiv) cozumDiv.classList.remove('hidden'); 
+        const fb = document.getElementById('flag-' + q.id); if (fb) fb.classList.add('hidden');
+
+        let durum = "Bo\u015f"; let verilenCevap = "Bo\u015f";
+
+        // \u015e\u0131klar\u0131n renklendirilmesi
+        document.querySelectorAll(`input[name="s${q.id}"]`).forEach(input => {
+            input.disabled = true;
+            let parentDiv = input.closest('.form-check');
+
+            if (input.value === q.cevap) {
+                parentDiv.classList.remove('bg-light', 'text-dark');
+                parentDiv.classList.add('bg-success', 'text-white', 'border-success', 'fw-bold', 'shadow-sm');
+            } 
+            else if (seciliSik && input.value === seciliSik.value && input.value !== q.cevap) {
+                parentDiv.classList.remove('bg-light', 'text-dark');
+                parentDiv.classList.add('bg-danger', 'text-white', 'border-danger', 'fw-bold', 'shadow-sm');
+            } 
+            else {
+                parentDiv.style.opacity = "0.4";
+            }
+        });
+
+        if (seciliSik) {
+          verilenCevap = seciliSik.value;
+          if (seciliSik.value === q.cevap) { 
+              dogru++; 
+              durum = "Do\u011fru"; 
+              kartDiv.classList.add('q-res-ok');
+          } 
+          else { 
+              yanlis++; 
+              durum = "Yanl\u0131\u015f"; 
+              kartDiv.classList.add('q-res-bad');
+              yanlisSorularListesi.push(soruNo);
+          }
+        } else {
+          bos++; 
+          durum = "Bo\u015f"; 
+          kartDiv.classList.add('q-res-empty');   // bo\u015f b\u0131rak\u0131lan soru: MAV\u0130 \u00e7er\u00e7eve
+        }
+
+        // Sonu\u00e7 etiketi (\u00e7er\u00e7eve bayrak y\u00fcz\u00fcnden sar\u0131 olsa bile durum yaz\u0131yla g\u00f6r\u00fcn\u00fcr)
+        (function() {
+          const head = kartDiv.querySelector('.q-head');
+          if (!head) return;
+          const tools = head.querySelector('.q-tools');
+          const chip = document.createElement('span');
+          chip.className = 'q-result ' + (durum === 'Do\u011fru' ? 'ok' : durum === 'Yanl\u0131\u015f' ? 'bad' : 'empty');
+          chip.textContent = durum === 'Do\u011fru' ? '\u2714 Do\u011fru' : durum === 'Yanl\u0131\u015f' ? '\u2718 Yanl\u0131\u015f' : '\u25cb Bo\u015f';
+          head.insertBefore(chip, tools);
+          if (testState.flags[q.id]) {
+            const f = document.createElement('span');
+            f.className = 'q-result flag'; f.textContent = '\ud83d\udea9 \u0130\u015faretliydi';
+            head.insertBefore(f, tools);
+          }
+          if (tools) tools.classList.add('hidden');
+        })();
+
+        soruDetaylari.push({
+          soruNo: soruNo, metin: q.metin, verilenCevap: verilenCevap, dogruCevap: q.cevap,
+          durum: durum, cozum: q.cozum, konu: q.konu || "",
+          secenekler: q.secenekler
+        });
+      });
+
+      let net = dogru - (yanlis / 4);
+      if (net < 0) net = 0;
+      let puan = (net / currentQuestions.length) * 100;
+
+      // Hangi sorular\u0131n yanl\u0131\u015f yap\u0131ld\u0131\u011f\u0131n\u0131 g\u00f6steren uyar\u0131 kutusu
+      let yanlisOzetiHtml = "";
+      if (yanlisSorularListesi.length > 0) {
+          yanlisOzetiHtml = `
+          <div class="alert alert-danger shadow-sm border-danger border-2 rounded-4 mb-5 text-start">
+              <h5 class="fw-bold text-danger mb-2"><i class="bi bi-exclamation-octagon-fill"></i> Dikkat Etmeniz Gereken Sorular</h5>
+              <p class="mb-0 text-dark fw-semibold" style="font-size: 1.1rem;">
+                  A\u015fa\u011f\u0131daki sorular\u0131 hatal\u0131 cevaplad\u0131n\u0131z. Sorular\u0131n alt\u0131nda a\u00e7\u0131lan \u00e7\u00f6z\u00fcm kutular\u0131n\u0131 ve k\u0131rm\u0131z\u0131/ye\u015fil se\u00e7enekleri inceleyin:<br>
+                  <span class="badge bg-danger fs-6 mt-2 py-2 px-3">Soru ${yanlisSorularListesi.join(', Soru ')}</span>
+              </p>
+          </div>`;
+      } else if (bos > 0) {
+          yanlisOzetiHtml = `<div class="alert alert-warning shadow-sm rounded-4 mb-5 fw-bold fs-5"><i class="bi bi-info-circle-fill"></i> Hi\u00e7 yanl\u0131\u015f\u0131n\u0131z yok ancak bo\u015f b\u0131rakt\u0131\u011f\u0131n\u0131z sorular var.</div>`;
+      } else {
+          yanlisOzetiHtml = `<div class="alert alert-success shadow-sm rounded-4 mb-5 fw-bold fs-5"><i class="bi bi-star-fill text-warning"></i> Harika! T\u00fcm sorular\u0131 do\u011fru cevaplad\u0131n\u0131z.</div>`;
+      }
+
+      const dEsc = escJs(dersAdi), uEsc = escJs(uniteNo);
+      let karneHtml = `
+        <div class="bg-white shadow-lg mb-5 p-4 p-md-5 border-0 rounded-4">
+          <h2 class="fw-bolder text-center text-dark mb-5"><i class="bi bi-award-fill text-warning"></i> S\u0131nav Sonucu ve Karne Analizi</h2>
+          
+          <div class="row text-center fw-bold g-3 mb-4 justify-content-center">
+             <div class="col-6 col-md-2"><div class="p-4 bg-success bg-opacity-10 text-success rounded-4 border border-success border-opacity-25 shadow-sm"><span class="d-block small text-uppercase mb-1">Do\u011fru</span><span class="fs-1">${dogru}</span></div></div>
+             <div class="col-6 col-md-2"><div class="p-4 bg-danger bg-opacity-10 text-danger rounded-4 border border-danger border-opacity-25 shadow-sm"><span class="d-block small text-uppercase mb-1">Yanl\u0131\u015f</span><span class="fs-1">${yanlis}</span></div></div>
+             <div class="col-6 col-md-2"><div class="p-4 bg-secondary bg-opacity-10 text-secondary rounded-4 border border-secondary border-opacity-25 shadow-sm"><span class="d-block small text-uppercase mb-1">Bo\u015f</span><span class="fs-1">${bos}</span></div></div>
+             <div class="col-6 col-md-2"><div class="p-4 bg-primary bg-opacity-10 text-primary rounded-4 border border-primary border-opacity-25 shadow-sm"><span class="d-block small text-uppercase mb-1">Net</span><span class="fs-1">${net.toFixed(2)}</span></div></div>
+             <div class="col-12 col-md-4"><div class="p-4 bg-dark text-white rounded-4 shadow-sm border border-secondary"><span class="d-block small text-uppercase mb-1 text-warning">Ba\u015far\u0131 Puan\u0131</span><span class="fs-1 text-warning">${puan.toFixed(1)}</span></div></div>
+          </div>
+          
+          ${yanlisOzetiHtml}
+          
+          <div id="pdf-alani" class="text-center mb-5 bg-light p-4 rounded-4 border">
+            <div class="spinner-border text-danger spinner-border-sm me-2" style="width:1.5rem; height:1.5rem;"></div>
+            <span class="text-dark fw-bold fs-5">Sonucunuz kaydediliyor ve PDF olarak ar\u015fivleniyor...</span>
+          </div>
+
+          ${aiAskCardHtml('ai-karne-analizi', dEsc, uEsc, 'finish', true)}
+
+          <div id="liderlik-tablosu"><div class="text-center p-5"><div class="spinner-border text-info" style="width: 3rem; height: 3rem;"></div><p class="mt-3 fw-bold text-muted fs-5">Canl\u0131 S\u0131ralama Hesaplan\u0131yor...</p></div></div>
+        </div>`;
+
+      document.getElementById('karne-alani').innerHTML = karneHtml;
+      
+      let bitirBtn = document.getElementById('bitir-alani');
+      if (bitirBtn) bitirBtn.classList.add('hidden');
+      
+      scrollContentTop();
+
+      lastSubmit = { d: dersAdi, u: uniteNo, dogru: dogru, yanlis: yanlis, bos: bos, net: net.toFixed(2), puan: puan.toFixed(1), det: soruDetaylari };
+      submitResult(lastSubmit);
+    }
+
+    function submitResult(p) {
+      google.script.run.withSuccessHandler(res => {
+        clearLocalProgress(p.d, p.u); // devam kayd\u0131 art\u0131k gereksiz (sunucu taraf\u0131 da siliyor)
+        studentStats = res.newStats;
+        renderLeaderboard(res.leaderboard);
+        
+        const pdfAlani = document.getElementById('pdf-alani');
+        if (pdfAlani) {
+          if (res.pdfUrl) {
+            pdfAlani.innerHTML = `<a href="${res.pdfUrl}" target="_blank" class="btn btn-danger btn-lg fw-bold shadow-sm px-5 py-3 rounded-pill"><i class="bi bi-file-earmark-pdf-fill"></i> \u00c7\u00f6z\u00fcm PDF'ini \u0130ndir</a><p class="text-muted fw-semibold small mt-3">Bu belgeye ar\u015fivinizden diledi\u011finiz zaman ula\u015fabilirsiniz.</p>`;
+          } else {
+            pdfAlani.innerHTML = `<span class="badge bg-secondary fs-5 py-2 px-4 rounded-pill">Sonucunuz g\u00fcvenle kaydedildi.</span>`;
+          }
+        }
+        // Yapay zek\u00e2 analizi art\u0131k iste\u011fe ba\u011fl\u0131: butonu etkinle\u015ftir
+        const aiBtn = document.getElementById('ai-karne-analizi-btn');
+        if (aiBtn) aiBtn.disabled = false;
+        speakText("S\u0131nav\u0131n\u0131z ba\u015far\u0131yla teslim edildi. Sonu\u00e7lar\u0131n\u0131z\u0131 ekrandan g\u00f6rebilirsiniz.");
+      }).withFailureHandler(() => {
+        const pdfAlani = document.getElementById('pdf-alani');
+        if (pdfAlani) pdfAlani.innerHTML = `<div class="alert alert-danger mb-3 fw-bold">Sonu\u00e7 kaydedilemedi (ba\u011flant\u0131 sorunu). Cevaplar\u0131n\u0131z kaybolmad\u0131; internetinizi kontrol edip tekrar deneyin.</div><button class="btn btn-danger fw-bold rounded-pill px-5" onclick="retrySubmit()">\ud83d\udd01 Tekrar Dene</button>`;
+      }).saveTestResultAndGetLeaderboard(currentStudentEmail, p.d, p.u, p.dogru, p.yanlis, p.bos, p.net, p.puan, p.det);
+    }
+
+    function retrySubmit() {
+      if (!lastSubmit) return;
+      const pdfAlani = document.getElementById('pdf-alani');
+      if (pdfAlani) pdfAlani.innerHTML = '<div class="spinner-border text-danger spinner-border-sm me-2"></div><span class="fw-bold">Yeniden g\u00f6nderiliyor...</span>';
+      submitResult(lastSubmit);
+    }
+
+    function renderLeaderboard(boardData) {
+      let lHtml = `<h3 class="fw-bolder text-center text-dark mt-4 mb-4 pb-2"><i class="bi bi-bar-chart-steps"></i> G\u00fcncel S\u0131n\u0131f S\u0131ralamas\u0131</h3>
+                   <div class="table-responsive bg-white rounded-4 shadow-sm border">
+                     <table class="table table-hover align-middle mb-0 text-center">
+                       <thead class="table-light text-secondary">
+                         <tr>
+                           <th class="py-3">S\u0131ra</th>
+                           <th class="py-3 text-start ps-4">Aday \u0130smi</th>
+                           <th class="text-center py-3">En Y\u00fcksek Net</th>
+                           <th class="text-center py-3">Do\u011fru / Yanl\u0131\u015f</th>
+                           <th class="text-center py-3">Deneme</th>
+                         </tr>
+                       </thead>
+                       <tbody>`;
+      boardData.forEach((row, idx) => {
+        let siralama = idx + 1;
+        let benMiyim = (row.email === currentStudentEmail);
+        let rowClass = benMiyim ? "table-warning fw-bold" : ""; 
+        let rankBadge = siralama === 1 ? '<span class="fs-3">\ud83e\udd47 1.</span>' : siralama === 2 ? '<span class="fs-4">\ud83e\udd48 2.</span>' : siralama === 3 ? '<span class="fs-4">\ud83e\udd49 3.</span>' : `<span class="fw-bold fs-5 text-muted">${siralama}.</span>`;
+        
+        lHtml += `<tr class="${rowClass}">
+                     <td class="align-middle" style="width: 80px;">${rankBadge}</td>
+                     <td class="text-start ps-4 py-3 fs-6">${escapeHtml(row.name)} ${benMiyim ? '<span class="badge bg-primary ms-2 rounded-pill px-2">Siz</span>' : ''}</td>
+                     <td class="text-center text-primary fw-bold fs-5">${row.maxNet}</td>
+                     <td class="text-center fw-semibold"><span class="text-success">${row.dogru} D</span> / <span class="text-danger">${row.yanlis} Y</span></td>
+                     <td class="text-center text-muted"><span class="badge bg-light text-dark border px-2 py-1">${row.attemptCount} kez</span></td>
+                   </tr>`;
+      });
+      lHtml += `</tbody></table></div>`;
+      const lt = document.getElementById('liderlik-tablosu');
+      if (lt) lt.innerHTML = lHtml;
+    }
   </script>
 </body>
 </html>
